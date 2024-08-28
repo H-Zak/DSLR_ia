@@ -8,7 +8,7 @@ from classes.Course import Course
 # Import algo for sort
 from modules.quick_sort import quick_sort
 
-df = pd.read_csv('../datasets/dataset_train.csv')
+# df = pd.read_csv('../datasets/dataset_train.csv')
 
 def sort_column(df : pd.DataFrame, name_column : str) -> np.ndarray:
     column_data = df[name_column].values
@@ -36,6 +36,7 @@ def get_tab_courses(df : pd.DataFrame) -> List[Course]:
         sort_data_course = sort_column(numeric_df, course)
         new_course = Course(course, numeric_df[course], sort_data_course)
         courses.append(new_course)
+        break
 
     return courses
 
