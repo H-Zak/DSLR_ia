@@ -36,7 +36,6 @@ def get_tab_courses(df : pd.DataFrame) -> List[Course]:
         sort_data_course = sort_column(numeric_df, course)
         new_course = Course(course, numeric_df[course], sort_data_course)
         courses.append(new_course)
-        break
 
     return courses
 

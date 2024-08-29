@@ -1,8 +1,12 @@
 import pandas as pd
-import numpy as np
 
+# Charger votre DataFrame
 df = pd.read_csv('../datasets/dataset_train.csv')
 
-numeric_df = df.select_dtypes(include=np.number)
+# Ajuster les options d'affichage
+pd.set_option('display.max_columns', None)  # Afficher toutes les colonnes
+pd.set_option('display.max_rows', None)     # Afficher toutes les lignes
+pd.set_option('display.width', None)        # Ajuster la largeur de l'affichage
 
-print(numeric_df.describe())
+# Afficher le résultat complet de describe
+print(df.describe())

@@ -1,0 +1,130 @@
+Course: Arithmancy
+  Count:     1566
+  Mean:     49634.5702
+  Std:     16674.4796
+  Min Score: -24370.0
+  25%      : 38511.5
+  50%      : 49013.5
+  75%      : 60811.25
+  Max Score: 104956.0
+
+Course: Astronomy
+  Count:     1568
+  Mean:     39.7971
+  Std:     520.1323
+  Min Score: -966.7405
+  25%      : -489.5514
+  50%      : 260.2894
+  75%      : 524.7719
+  Max Score: 1016.2119
+
+Course: Herbology
+  Count:     1567
+  Mean:     1.141
+  Std:     5.218
+  Min Score: -10.2957
+  25%      : -4.3082
+  50%      : 3.469
+  75%      : 5.4192
+  Max Score: 11.6129
+
+Course: Defense Against the Dark Arts
+  Count:     1569
+  Mean:     -0.3879
+  Std:     5.2111
+  Min Score: -10.1621
+  25%      : -5.2591
+  50%      : -2.5893
+  75%      : 4.9047
+  Max Score: 9.6674
+
+Course: Divination
+  Count:     1561
+  Mean:     3.1539
+  Std:     4.154
+  Min Score: -8.727
+  25%      : 3.099
+  50%      : 4.624
+  75%      : 5.667
+  Max Score: 10.032
+
+Course: Muggle Studies
+  Count:     1565
+  Mean:     -224.5899
+  Std:     486.1894
+  Min Score: -1086.4968
+  25%      : -577.5801
+  50%      : -419.1643
+  75%      : 254.9949
+  Max Score: 1092.3886
+
+Course: Ancient Runes
+  Count:     1565
+  Mean:     495.748
+  Std:     106.2512
+  Min Score: 283.8696
+  25%      : 397.511
+  50%      : 463.9183
+  75%      : 597.4922
+  Max Score: 745.3962
+
+Course: History of Magic
+  Count:     1557
+  Mean:     2.9631
+  Std:     4.4244
+  Min Score: -8.859
+  25%      : 2.2187
+  50%      : 4.3782
+  75%      : 5.8252
+  Max Score: 11.8897
+
+Course: Transfiguration
+  Count:     1566
+  Mean:     1030.0969
+  Std:     44.111
+  Min Score: 906.6273
+  25%      : 1026.21
+  50%      : 1045.507
+  75%      : 1058.4364
+  Max Score: 1098.9582
+
+Course: Potions
+  Count:     1570
+  Mean:     5.9504
+  Std:     3.1469
+  Min Score: -4.6975
+  25%      : 3.6468
+  50%      : 5.8748
+  75%      : 8.2482
+  Max Score: 13.5368
+
+Course: Care of Magical Creatures
+  Count:     1560
+  Mean:     -0.0534
+  Std:     0.9711
+  Min Score: -3.3137
+  25%      : -0.6716
+  50%      : -0.0448
+  75%      : 0.5899
+  Max Score: 3.0565
+
+Course: Charms
+  Count:     1600
+  Mean:     -243.3744
+  Std:     8.7809
+  Min Score: -261.0489
+  25%      : -250.6526
+  50%      : -244.8678
+  75%      : -232.5523
+  Max Score: -225.4281
+
+Course: Flying
+  Count:     1600
+  Mean:     21.958
+  Std:     97.6011
+  Min Score: -181.47
+  25%      : -41.87
+  50%      : -2.515
+  75%      : 50.56
+  Max Score: 279.07
+
