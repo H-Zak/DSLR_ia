@@ -66,12 +66,17 @@ class Course:
     
     def mean_calcul(self):
         my_sum = self.sum()
-        return round(my_sum / self.count, 4)
+        if self.count != 0:
+            return round(my_sum / self.count, 4)
+        else:
+             return None
     
     def varirance(self):
         variance = 0
         for value in self.data_sorted:
             variance += (value - self.mean) ** 2
+        if self.count == 0:
+            return None
         variance = np.sqrt(variance/self.count)
         return round(variance,4)
 
