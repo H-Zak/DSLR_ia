@@ -1,4 +1,6 @@
 import numpy as np
+import math
+
 from typing import Union, List
 
 num = Union[int, float, np.float64]
@@ -12,9 +14,9 @@ class Course:
         self.mean = 0
         self.std = 0
         self.min = self.init_min_value() 
-        self.percentile_25 = self.init_percentile(0.25)
-        self.percentile_50 = self.init_percentile(0.5)
-        self.percentile_75 = self.init_percentile(0.75)
+        self.percentile_25 = self.get_percentile(0.25)
+        self.percentile_50 = self.get_percentile(0.5)
+        self.percentile_75 = self.get_percentile(0.75)
         self.max = self.init_max_value()
     
     def __str__(self) -> str:
@@ -46,8 +48,14 @@ class Course:
 
         return round(percentile, 4)
 
-         
-
+    def get_percentile(self, divisor):
+        print('---------------------------')
+        print(self.count)
+        index = math.ceil(divisor * (self.count))
+        index_2 = index - 1
+        print(index)
+        print(index_2)
+        return self.data_sorted[index]
 
 
     # def init_percentile_25(self):
