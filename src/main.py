@@ -2,6 +2,10 @@ import pandas as pd
 import numpy as np
 import math
 
+from scipy.stats import ks_2samp
+import matplotlib.pyplot as plt
+
+
 from typing import Union, List
 
 # Import course
@@ -23,7 +27,7 @@ def sort_column(df : pd.DataFrame, name_column : str) -> np.ndarray:
     return column_data_sorted
 
 
-def get_tab_courses(df : pd.DataFrame) -> List[Course]:
+def get_tab_courses(df : pd.DataFrame, flag) -> List[Course]:
     courses : List[Course] = []
     # Getting all the columns with numeric values
     numeric_df = df.select_dtypes(include=np.number)
@@ -34,9 +38,9 @@ def get_tab_courses(df : pd.DataFrame) -> List[Course]:
     # print(list_courses)
     # Sorting data
     for course in list_courses:
-        print(course)
+        # print(course)
         sort_data_course = sort_column(numeric_df, course)
-        new_course = Course(course, numeric_df[course], sort_data_course)
+        new_course = Course(course, numeric_df[course], sort_data_course, flag)
         courses.append(new_course)
 
     return courses
@@ -47,22 +51,42 @@ def describe_data_house(path_to_data_file : str):
 
 
     houses = df['Hogwarts House'].unique()
-    print(houses)
     house_courses = {}
     for house in houses:
         house_df = df[df['Hogwarts House'] == house]
-        house_courses[house] = get_tab_courses(house_df)
-        print(house_courses[house][2])
+        house_courses[house] = get_tab_courses(house_df, True)
+        # print(house_courses[house][2])
+
+    stat, p_value = ks_2samp(house_courses['Gryffindor'][2].data_zscore, house_courses['Slytherin'][2].data_zscore)
+    # print(house_courses['Slytherin'][2], house_courses['Gryffindor'][2].data_sorted)
+    print(f"Statistique K-S: {stat}, p-value: {p_value}")
+
+    for course_index in range(len(house_courses['Gryffindor'])):
+        print(len(house_courses['Gryffindor']))
+        course_name = house_courses['Gryffindor'][course_index].name
+        plt.figure(figsize=(10, 6))
+
+        # Créer un histogramme pour chaque maison
+        for house in houses:
+            course_data = house_courses[house][course_index].data_zscore
+            plt.hist(course_data, bins=10, alpha=0.5, label=house)
+
+        plt.title(f'Histogrammes des scores par maison pour le cours {course_name}')
+        plt.xlabel('Score')
+        plt.ylabel('Nombre d\'étudiants')
+        plt.legend()
+        plt.show()
+
 
 
 def describe_data(path_to_data_file : str):
     # Reading data
     df = pd.read_csv(path_to_data_file)
 
-    courses_data = get_tab_courses(df)
+    courses_data = get_tab_courses(df, False)
 
-    for course in courses_data:
-        print(course)
+    # for course in courses_data:
+    #     print(course)
 
 
 
