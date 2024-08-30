@@ -10,14 +10,14 @@ from classes.Course import Course
 from modules.quick_sort import quick_sort
 
 def sort_column(df : pd.DataFrame, name_column : str) -> np.ndarray:
+    # Get values from the column
     column_data = df[name_column].values
     # Select all not Nan values
     column_with_no_nan = [num for num in column_data if not math.isnan(num)]
     # Sorting values
     column_data_sorted = quick_sort(column_with_no_nan)
-
+    # Returning data column sorted
     return column_data_sorted
-
 
 def get_tab_courses(df : pd.DataFrame) -> List[Course]:
     courses : List[Course] = []
@@ -62,19 +62,6 @@ def describe_data_house(path_to_data_file : str):
     for house in houses:
         house_df = df[df['Hogwarts House'] == house]
         house_courses[house] = get_tab_courses(house_df)
-
-    # print_data_house_courses(house_courses)
-
-    get_course_info_from_house(house_courses, houses[0], 'Arithmancy')
-
-def describe_data(path_to_data_file : str):
-    # Reading data
-    df = pd.read_csv(path_to_data_file)
-
-    courses_data = get_tab_courses(df)
-
-    for course in courses_data:
-        print(course)
 
 def main():
     try:
