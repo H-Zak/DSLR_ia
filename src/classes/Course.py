@@ -6,20 +6,29 @@ from typing import Union, List
 num = Union[int, float, np.float64]
 
 class Course:
-    def __init__(self, name : str, raw_data: List[num], data_sorted : List[num], normalize: bool = False):
-        self.name = name
-        self.raw_data = raw_data
-        self.data_sorted = data_sorted
-        self.count = len(self.data_sorted)
-        self.mean = self.mean_calcul(data_sorted)
-        self.std = self.varirance(data_sorted, self.mean)
-        self.min = self.init_min_value(self.data_sorted) 
-        self.percentile_25 = self.init_percentile(0.25, self.data_sorted)
-        self.percentile_50 = self.init_percentile(0.5, self.data_sorted)
-        self.percentile_75 = self.init_percentile(0.75, self.data_sorted)
-        self.max = self.init_max_value(self.data_sorted)
+    def __init__(self, name : str, raw_data: List[num], normalize: bool = False):
+        self.name : str = name
+        self.raw_data : List[num] = raw_data
+        # Compute count
+        self.count : int = len(self.raw_data)
+        # Compute mean with data avalaible
+        self.mean : num = self.mean_calcul(raw_data)
+        # Sorting the raw data
+        self.data_sorted : List[num] = self.sort_data()
+        # Compute new count
+        self.count : int = len(self.data_sorted)
+        
+
+        self.std : num = self.varirance(self.data_sorted, self.mean)
+        self.min : num = self.init_min_value(self.data_sorted) 
+        self.percentile_25 : num = self.init_percentile(0.25, self.data_sorted)
+        self.percentile_50 : num = self.init_percentile(0.5, self.data_sorted)
+        self.percentile_75 : num = self.init_percentile(0.75, self.data_sorted)
+        self.max : num = self.init_max_value(self.data_sorted)
+
+        
         if normalize :
-            self.data_zscore = self.normalize_data(data_sorted)
+            self.data_zscore = self.normalize_data(self.data_sorted)
             self.mean_zscore = self.mean_calcul(self.data_zscore)
             self.std_zscore = self.varirance(self.data_zscore, self.mean_zscore)
             self.percentile_25_zscore = self.init_percentile(0.25, self.data_zscore)
@@ -27,29 +36,48 @@ class Course:
             self.percentile_75_zscore = self.init_percentile(0.75, self.data_zscore)
             self.max_zscore = self.init_max_value(self.data_zscore)
             self.min_zscore= self.init_min_value(self.data_zscore) 
-
-
-    
-    
+   
     def __str__(self) -> str:
         return (f'Course: {self.name}\n'
-                f'  Count:     {self.count}\n'
-                f'  Mean:     {self.mean}\n'
-                f'  Std:     {self.std}\n'
-                f'  Min Score: {self.min}\n'
-                f'  25%      : {self.percentile_25}\n'
-                f'  50%      : {self.percentile_50}\n'
-                f'  75%      : {self.percentile_75}\n'
-                f'  Max Score: {self.max}\n'
-                f'  Mean_zcore:     {self.mean_zscore}\n'
-                f'  Std_zcore:     {self.std_zscore}\n'
-                f'  Min Score: {self.min_zscore}\n'
-                f'  25% zcore      : {self.percentile_25_zscore}\n'
-                f'  50%  zcore    : {self.percentile_50_zscore}\n'
-                f'  75%   zcore   : {self.percentile_75_zscore}\n'
-                f'  Max Score: {self.max_zscore}\n'
+                f'  Count:      {self.count}\n'
+                f'  Mean:       {self.mean}\n'
+                f'  Std:        {self.std}\n'
+                f'  Min Score:  {self.min}\n'
+                f'  25%      :  {self.percentile_25}\n'
+                f'  50%      :  {self.percentile_50}\n'
+                f'  75%      :  {self.percentile_75}\n'
+                f'  Max Score:  {self.max}\n'
+                f'  Mean Zcore: {self.mean_zscore}\n'
+                f'  Std Zcore:  {self.std_zscore}\n'
+                f'  Min Zcore:  {self.min_zscore}\n'
+                f'  25% Zcore:  {self.percentile_25_zscore}\n'
+                f'  50% Zcore:  {self.percentile_50_zscore}\n'
+                f'  75% Zcore:  {self.percentile_75_zscore}\n'
+                f'  Max Zcore:  {self.max_zscore}\n'
                 )
 
+
+    def quick_sort(self, array : np.ndarray) -> np.ndarray:
+        if len(array) <= 1:
+            return array
+        else:
+            pivot = array[len(array) // 2]            
+            left = [x for x in array if x < pivot]
+            middle = [x for x in array if x == pivot]
+            right = [x for x in array if x > pivot]
+            return self.quick_sort(left) + middle + self.quick_sort(right)
+    
+    def sort_data(self) -> np.ndarray:
+        # Getting the mean_value
+        mean_value = self.get_mean()
+        # Remplacing Nan data
+        column_with_no_nan = np.array([num if not math.isnan(num) else mean_value for num in self.raw_data])
+        # Sorting values
+        column_data_sorted = self.quick_sort(column_with_no_nan)
+        # Returning data column sorted
+        return column_data_sorted
+
+    # Init methods
     def init_min_value(self, data):
         return round(data[0], 4)
     
@@ -72,19 +100,11 @@ class Course:
             percentile = data[index]
         return round(percentile, 4)
 
-    def get_percentile(self, divisor):
-        # print('---------------------------')
-        # print(self.count)
-        index = math.ceil(divisor * (self.count))
-        index_2 = index - 1
-        # print(index)
-        # print(index_2)
-        return self.data_sorted[index]
-
     def sum(self, data):
         sum = 0
         for value in data:
-            sum += value 
+            if not math.isnan(value):
+                sum += value 
         return sum
     
     def mean_calcul(self, data):
@@ -92,7 +112,7 @@ class Course:
         if self.count != 0:
             return round(my_sum / self.count, 4)
         else:
-             return None
+            return None
     
     def varirance(self, data, mean):
         variance = 0
@@ -102,12 +122,67 @@ class Course:
             return None
         variance = np.sqrt(variance/self.count)
         return round(variance,4)
+    
+    # Getters
+    def get_describe_feature(self, describe_feature: str):
+        match describe_feature:
+            case 'name':
+                return self.get_name()
+            case 'raw_data':
+                return self.get_raw_data()
+            case 'data_sorted':
+                return self.get_data_sorted()
+            case 'count':
+                return self.get_count()
+            case 'mean':
+                return self.get_mean()
+            case 'std':
+                return self.get_std()
+            case 'min':
+                return self.get_min()
+            case 'percentile_25':
+                return self.get_percentile_25()
+            case 'percentile_50':
+                return self.get_percentile_50()
+            case 'percentile_75':
+                return self.get_percentile_75()
+            case 'max':
+                return self.get_max()
+            case _:
+                raise ValueError(f"Unknown describe feature: {describe_feature}")
 
-    # def init_percentile_25(self):
-    #     return self.data_sorted[0]
+    def get_name(self) -> str:
+        return self.name
+
+    def get_raw_data(self) -> List[float]:
+        return self.raw_data
+
+    def get_data_sorted(self) -> List[float]:
+        return self.data_sorted
+
+    def get_count(self) -> int:
+        return self.count
+
+    def get_mean(self) -> num:
+        return self.mean
+
+    def get_std(self) -> num:
+        return self.std
+
+    def get_min(self) -> num:
+        return self.min
+
+    def get_percentile_25(self) -> num:
+        return self.percentile_25
+
+    def get_percentile_50(self) -> num:
+        return self.percentile_50
+
+    def get_percentile_75(self) -> num:
+        return self.percentile_75
+
+    def get_max(self) -> num:
+        return self.max
     
-    # def init_percentile_50(self):
-    #     return self.data_sorted[0]
-    
-    # def init_(self):
-    #     return self.data_sorted[0]
+    def get_data_zscore(self):
+        return self.data_zscore
