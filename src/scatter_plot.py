@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 import math
 import sys
 import os
@@ -16,6 +15,12 @@ from classes.Course import Course
 from exceptions.CourseNotFound import CourseNotFound
 # Import algo for sort
 from modules.quick_sort import quick_sort
+# Import prompt
+from modules.prompt import prompt
+# Import plotters
+from modules.plotting import scatter_plot
+# Import utils
+from modules.utils import get_name_class_for_plot
 
 def select_numeric_columns(df : pd.DataFrame) -> pd.DataFrame:
     return df.select_dtypes(include=np.number)
@@ -33,43 +38,6 @@ def get_tab_courses(df : pd.DataFrame) -> List[Course]:
         courses.append(new_course)
 
     return courses
-
-def scatter_plot(classes: Tuple[str, str], 
-                first_notes : dict, 
-                second_notes : dict,
-                plot_path : str='./plots/scatter_plots/plot_2.png'):
-
-    data_to_be_plotted : dict = {
-        classes[0] : {},
-        classes[1] : {}
-    }
-
-    for house in first_notes:
-        print(house)
-        # first_notes[house].get_name()
-        data_to_be_plotted[first_notes[house].get_name()][house] = first_notes[house].get_data_sorted()
-        data_to_be_plotted[second_notes[house].get_name()][house] = second_notes[house].get_data_sorted()
-        # data_to_be_plotted[first_notes[house].get_name()].append(first_notes[house].get_data_zscore())
-        # data_to_be_plotted[second_notes[house].get_name()].append(second_notes[house].get_data_zscore())
-
-     # Clear the current figure to prevent overlaying of plots
-    plt.clf()
-
-    plt.figure(figsize=(10, 6))
-
-    houses = data_to_be_plotted[classes[0]].keys()
-
-    for house in houses:
-        arithmancy_scores = data_to_be_plotted[classes[0]][house]
-        astronomy_scores = data_to_be_plotted[classes[1]][house]
-        
-        plt.scatter(arithmancy_scores, astronomy_scores, label=house, alpha=0.6)
-
-    plt.xlabel(classes[0])
-    plt.ylabel(classes[1])
-    # Save the plot
-    plt.savefig(plot_path)
-    print(f'The plot has been saved in {plot_path}!')
 
 def get_class_data_from_houses(house_courses : dict, course_searched : str) -> dict:
 
@@ -98,86 +66,46 @@ def create_houses_list_of_course(df : pd.DataFrame ,hogwarts_houses: dict) -> di
 
     return courses_by_house
 
-# def describe_data(path_to_data_file : str):
-#     # Reading data
-#     df = pd.read_csv(path_to_data_file)
+def execute_plotter_grades(house_classes_data : dict, plot_choices : list):
 
-#     courses_data = get_tab_courses(df)
-
-#     for course in courses_data:
-#         print(course)
-
-
-# def display_menu():
-#     while True:
-#         os.system('clear')
-#         print("\n--- Main Menu ---")
-#         print("1. Plot raw data")
-
-#         choice = input("Choose an option: ")
-
-def save_scatter_plot_from_choices():
-    pass
-
-def prompt(stdscr, collection_list, prompt_message, back):
-    # Clear and refresh the screen
-    curses.curs_set(0)
-    stdscr.clear()
-    stdscr.refresh()
-
-    # Copy the collection list of options
-    collection_lst = collection_list[:] 
-
-    if back == True:
-        collection_lst.append('GO BACK')
-    collection_lst.append('EXIT')
-
-    # Initialize the current selected option to 0
-    current_option = 0
+    first_class : str = ''
+    second_class : str = ''
     
-    # Loop indefinitely until a selection is made
     while True:
-        # Clear the screen
-        stdscr.clear()
-        
-        # Display the prompt message at the top of the screen
-        stdscr.addstr(prompt_message)
-        
-        # Iterate over each item in the collection_lst
-        for idx, item in enumerate(collection_lst):
-            try:
-                # Highlight the currently selected option
-                if idx == current_option:
-                    stdscr.addstr(f"> {item}\n", curses.A_BOLD)
-                else:
-                    stdscr.addstr(f"  {item}\n")
-            except curses.error:
-                print('The terminal window might be so small')
-                exit()
-        # Refresh the screen to display changes
-        stdscr.refresh()
-        
-        # Get the user's input (key press)
-        key = stdscr.getch()
+        first_class = curses.wrapper(lambda stdscr: prompt(stdscr, plot_choices, "Choose first class:\n", False))
+        if first_class == 'EXIT':
+            return
+        second_class = curses.wrapper(lambda stdscr: prompt(stdscr, plot_choices, "Choose second class:\n", False))
+        if second_class == 'EXIT':
+            return
+        if first_class != second_class:
+            break
+        else:
+            print("The classes choised must be different")
+            time.sleep(2)
 
-        # Handle navigation keys (up and down arrow keys)
-        if key == curses.KEY_UP:
-            current_option = (current_option - 1) % len(collection_lst)
-        elif key == curses.KEY_DOWN:
-            current_option = (current_option + 1) % len(collection_lst)
-        # Handle selection (Enter key)
-        elif key == 10:  # 'Enter' key
-            # Return the selected option
-            return collection_lst[current_option]
+    grades_of_first_class = get_class_data_from_houses(house_classes_data, first_class)
+    grades_of_second_class = get_class_data_from_houses(house_classes_data, second_class)
+
+    # Getting name of the numeric columns
+    scatter_plot((first_class, second_class),
+                 grades_of_first_class,
+                 grades_of_second_class,
+                 f'./plots/{get_name_class_for_plot(first_class)}-VS-{get_name_class_for_plot(second_class)}')
+
 
 def main():
     try:
         # describe_data('../datasets/dataset_train_2.csv')#exo 1
-        # if len(sys.argv) <= 2:
-        #     raise ValueError("Not enough arguments provided")
 
-        first_class : str = ''
-        second_class : str = ''
+        # 1. Plot all the grades of 2 classes for the four houses.
+            # 4 casas
+            # 2 classes
+        # 2. Plot date with respect to a description characteristic (mean, std, etc).
+            # All time
+            # list of description characteristic
+
+
 
         # Reading data
         df = pd.read_csv('../datasets/dataset_train.csv')
@@ -190,29 +118,42 @@ def main():
         
         # Get name of Hogwarts classes
         unique_houses = df['Hogwarts House'].unique()
+
         # Getting main data structure
         house_classes_data = create_houses_list_of_course(df, unique_houses)
 
+    
+        prompt_options = {
+            '1. Plot two courses for all houses' : {
+                'choice' : 1,
+                'list_choices' : list_courses,
+                'func' : execute_plotter_grades
+            },
+
+            '2. Plot date with respect to a description characteristic (mean, std, etc).' : {
+                'choice' : 2,
+                'list_choices' : ['mean', 'std', 'min', '25%', '50%', '75%', 'Max'],
+                'func' : 'tete'
+            },
+        }
+
+        # Lauch prompt
         while True:
-            # endpoint_choice = curses.wrapper(lambda stdscr: prompt(stdscr, list(list_courses)), "Choose the main endpoint:\n", False)
-            first_class = curses.wrapper(lambda stdscr: prompt(stdscr, list_courses, "Choose the main endpoint:\n", False))
-            if first_class == 'EXIT':
+            # os.system('clear')
+            plot_choice = curses.wrapper(lambda stdscr: prompt(stdscr, list(prompt_options.keys()), "Choose the plot option:\n", False))
+            if plot_choice == 'EXIT':
                 break
-            second_class = curses.wrapper(lambda stdscr: prompt(stdscr, list_courses, "Choose the main eeendpoint:\n", False))
-            if second_class == 'EXIT':
-                break
+            plot_data = prompt_options[plot_choice]
+            plot_data['func'](house_classes_data, plot_data['list_choices'])
 
-          
-
-            if first_class != second_class:
-                print('epa')
-            else:
-                print("The classes choised must be different")
-                time.sleep(2)
-                continue
+            # if first_class != second_choice:
+            #     print('epa')
+            # else:
+            #     print("The classes choised must be different")
+            #     time.sleep(2)
+            #     continue
 
             time.sleep(2)
-
      
 
         # create_scatter_plot(choices[1], choices[2])
