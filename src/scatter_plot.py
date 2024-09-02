@@ -20,7 +20,7 @@ from modules.prompt import prompt
 # Import plotters
 from modules.plotting import scatter_plot
 # Import utils
-from modules.utils import get_name_class_for_plot
+from modules.utils import get_name_for_plot
 
 def select_numeric_columns(df : pd.DataFrame) -> pd.DataFrame:
     return df.select_dtypes(include=np.number)
@@ -52,7 +52,7 @@ def get_class_data_from_houses(house_courses : dict, course_searched : str) -> d
 
     if not course_found:
         raise CourseNotFound(course_searched)
-    
+
     return grades_of_house
 
 def create_houses_list_of_course(df : pd.DataFrame ,hogwarts_houses: dict) -> dict:
@@ -66,46 +66,41 @@ def create_houses_list_of_course(df : pd.DataFrame ,hogwarts_houses: dict) -> di
 
     return courses_by_house
 
-def execute_plotter_grades(house_classes_data : dict, plot_choices : list):
-
-    first_class : str = ''
-    second_class : str = ''
+# TODO
+def extract_house_feature_data(house_classes_data,
+                               first_class : str, second_class : str,
+                               feature : str, normalized_flag : bool) -> dict:
     
-    while True:
-        first_class = curses.wrapper(lambda stdscr: prompt(stdscr, plot_choices, "Choose first class:\n", False))
-        if first_class == 'EXIT':
-            return
-        second_class = curses.wrapper(lambda stdscr: prompt(stdscr, plot_choices, "Choose second class:\n", False))
-        if second_class == 'EXIT':
-            return
-        if first_class != second_class:
-            break
-        else:
-            print("The classes choised must be different")
-            time.sleep(2)
 
-    grades_of_first_class = get_class_data_from_houses(house_classes_data, first_class)
-    grades_of_second_class = get_class_data_from_houses(house_classes_data, second_class)
+    first_class_data = get_class_data_from_houses(house_classes_data, first_class)    
+    second_class_data = get_class_data_from_houses(house_classes_data, second_class)
 
-    # Getting name of the numeric columns
-    scatter_plot((first_class, second_class),
-                 grades_of_first_class,
-                 grades_of_second_class,
-                 f'./plots/{get_name_class_for_plot(first_class)}-VS-{get_name_class_for_plot(second_class)}')
+    data_to_be_plotted : dict = {
+        first_class : {},
+        second_class : {}
+    }
 
+    for house in house_classes_data:
+        data_to_be_plotted[first_class_data[house].get_name()][house] = first_class_data[house].get_describe_feature(feature, normalized_flag)
+        data_to_be_plotted[second_class_data[house].get_name()][house] = second_class_data[house].get_describe_feature(feature, normalized_flag)
+
+    return data_to_be_plotted
+
+
+def execute_plotter_feature(house_classes_data : dict, classes : tuple, feature : str, normalized_flag : bool):
+    # Extracting class from tuple
+    first_class = classes[0]
+    second_class = classes[1]
+    # Getting data to be plotted
+    data_to_be_plotted = extract_house_feature_data(house_classes_data, first_class, second_class, feature, normalized_flag)
+    # Getting plot name
+    plot_name = get_name_for_plot(first_class, second_class, feature, normalized_flag)
+    # Plotting
+    scatter_plot((first_class, second_class), data_to_be_plotted, plot_name)
 
 def main():
     try:
         # describe_data('../datasets/dataset_train_2.csv')#exo 1
-
-        # 1. Plot all the grades of 2 classes for the four houses.
-            # 4 casas
-            # 2 classes
-        # 2. Plot date with respect to a description characteristic (mean, std, etc).
-            # All time
-            # list of description characteristic
-
-
 
         # Reading data
         df = pd.read_csv('../datasets/dataset_train.csv')
@@ -114,7 +109,7 @@ def main():
         numeric_df = select_numeric_columns(df)
         # Getting names of the numeric columns
         list_courses = [column for column in numeric_df.columns if column != "Index"]
-        print(list_courses)
+        # print(list_courses)
         
         # Get name of Hogwarts classes
         unique_houses = df['Hogwarts House'].unique()
@@ -122,49 +117,35 @@ def main():
         # Getting main data structure
         house_classes_data = create_houses_list_of_course(df, unique_houses)
 
-    
-        prompt_options = {
-            '1. Plot two courses for all houses' : {
-                'choice' : 1,
-                'list_choices' : list_courses,
-                'func' : execute_plotter_grades
-            },
-
-            '2. Plot date with respect to a description characteristic (mean, std, etc).' : {
-                'choice' : 2,
-                'list_choices' : ['mean', 'std', 'min', '25%', '50%', '75%', 'Max'],
-                'func' : 'tete'
-            },
-        }
-
-        # Lauch prompt
+        feature : str = ''
+        first_class : str = ''
+        second_class : str = ''
+        normalized_data_flag : bool = False
+        list_features : list =  ['grades', 'mean', 'std', 'min', '25%', '50%', '75%', 'max']
+        
         while True:
-            # os.system('clear')
-            plot_choice = curses.wrapper(lambda stdscr: prompt(stdscr, list(prompt_options.keys()), "Choose the plot option:\n", False))
-            if plot_choice == 'EXIT':
+            feature = curses.wrapper(lambda stdscr: prompt(stdscr, list_features, "Choose feature class:\n", False))
+            if feature == 'EXIT':
+                return
+            first_class = curses.wrapper(lambda stdscr: prompt(stdscr, list_courses, "Choose first class:\n", False))
+            if first_class == 'EXIT':
+                return
+            second_class = curses.wrapper(lambda stdscr: prompt(stdscr, list_courses, "Choose second class:\n", False))
+            if second_class == 'EXIT':
+                return
+            # Validating classes choices
+            if feature != second_class:
+                normalized_choice = curses.wrapper(lambda stdscr: prompt(stdscr, ['Yes', 'No'], "Normalized data?\n", False))
+                if normalized_choice == "Yes":
+                    normalized_data_flag = True
+                elif normalized_choice == 'EXIT':
+                    return
                 break
-            plot_data = prompt_options[plot_choice]
-            plot_data['func'](house_classes_data, plot_data['list_choices'])
+            else:
+                print("The classes choised must be different")
+                time.sleep(2)
 
-            # if first_class != second_choice:
-            #     print('epa')
-            # else:
-            #     print("The classes choised must be different")
-            #     time.sleep(2)
-            #     continue
-
-            time.sleep(2)
-     
-
-        # create_scatter_plot(choices[1], choices[2])
-
-        # grades_of_first_class = get_class_data_from_houses(house_classes_data, first_class)
-        # grades_of_second_class = get_class_data_from_houses(house_classes_data, second_class)
-
-        # # # Getting name of the numeric columns
-        # # list_courses = [column for column in numeric_df.columns if column != "Index"]
-
-        # scatter_plot((first_class, second_class), grades_of_first_class, grades_of_second_class)
+        execute_plotter_feature(house_classes_data, (first_class, second_class), feature, normalized_data_flag)
 
     except ValueError as e:
         print(e)

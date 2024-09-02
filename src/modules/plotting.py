@@ -1,23 +1,26 @@
 import matplotlib.pyplot as plt
 from typing import Tuple
 
-def scatter_plot(classes: Tuple[str, str], 
-                first_notes : dict, 
-                second_notes : dict,
+def scatter_plot(
+                classes: Tuple[str, str], 
+                data_to_be_plotted : dict,
                 plot_path : str):
-
-    data_to_be_plotted : dict = {
-        classes[0] : {},
-        classes[1] : {}
+    
+    house_colors = {
+        'Gryffindor': 'red',
+        'Hufflepuff': 'yellow',
+        'Ravenclaw': 'blue',
+        'Slytherin': 'green'
     }
 
-    for house in first_notes:
-        # data_to_be_plotted[first_notes[house].get_name()][house] = first_notes[house].get_data_sorted()
-        # data_to_be_plotted[second_notes[house].get_name()][house] = second_notes[house].get_data_sorted()
-        data_to_be_plotted[first_notes[house].get_name()][house] = first_notes[house].get_data_zscore()
-        data_to_be_plotted[second_notes[house].get_name()][house] = second_notes[house].get_data_zscore()
+    # house_colors = {
+    #     'Gryffindor': '#9c1203', 
+    #     'Hufflepuff': '#e3a000',
+    #     'Ravenclaw': '#00165e',  
+    #     'Slytherin': '#033807'
+    # }
 
-     # Clear the current figure to prevent overlaying of plots
+    # Clear the current figure to prevent overlaying of plots
     plt.clf()
 
     plt.figure(figsize=(10, 6))
@@ -25,10 +28,16 @@ def scatter_plot(classes: Tuple[str, str],
     houses = data_to_be_plotted[classes[0]].keys()
 
     for house in houses:
-        arithmancy_scores = data_to_be_plotted[classes[0]][house]
-        astronomy_scores = data_to_be_plotted[classes[1]][house]
+        first_class_scores = data_to_be_plotted[classes[0]][house]
+        second_class_scores = data_to_be_plotted[classes[1]][house]
         
-        plt.scatter(arithmancy_scores, astronomy_scores, label=house, alpha=0.6)
+        plt.scatter(first_class_scores, second_class_scores,
+                    label=house,
+                    color=house_colors[house],
+                    alpha=0.6)
+
+    # Adding the legends
+    plt.legend()
 
     plt.xlabel(classes[0])
     plt.ylabel(classes[1])

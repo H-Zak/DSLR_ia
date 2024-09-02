@@ -124,65 +124,68 @@ class Course:
         return round(variance,4)
     
     # Getters
-    def get_describe_feature(self, describe_feature: str):
+    def get_describe_feature(self, describe_feature: str, normalized_flag: bool = False) -> float:
         match describe_feature:
             case 'name':
                 return self.get_name()
             case 'raw_data':
                 return self.get_raw_data()
             case 'data_sorted':
-                return self.get_data_sorted()
+                return self.get_data_sorted(normalized_flag)
+            case 'grades':
+                return self.get_data_sorted(normalized_flag)
             case 'count':
                 return self.get_count()
             case 'mean':
-                return self.get_mean()
+                return self.get_mean(normalized_flag)
             case 'std':
-                return self.get_std()
+                return self.get_std(normalized_flag)
             case 'min':
-                return self.get_min()
+                return self.get_min(normalized_flag)
             case 'percentile_25':
-                return self.get_percentile_25()
+                return self.get_percentile_25(normalized_flag)
             case 'percentile_50':
-                return self.get_percentile_50()
+                return self.get_percentile_50(normalized_flag)
             case 'percentile_75':
-                return self.get_percentile_75()
+                return self.get_percentile_75(normalized_flag)
             case 'max':
-                return self.get_max()
+                return self.get_max(normalized_flag)
             case _:
                 raise ValueError(f"Unknown describe feature: {describe_feature}")
-
+            
+    # Getters with normalization flag
     def get_name(self) -> str:
         return self.name
 
     def get_raw_data(self) -> List[float]:
         return self.raw_data
 
-    def get_data_sorted(self) -> List[float]:
-        return self.data_sorted
+    def get_data_sorted(self, normalized_flag: bool = False) -> List[float]:
+        return self.data_zscore if normalized_flag else self.data_sorted
 
     def get_count(self) -> int:
         return self.count
 
-    def get_mean(self) -> num:
-        return self.mean
+    def get_mean(self, normalized_flag: bool = False) -> float:
+        return self.mean_zscore if normalized_flag else self.mean
 
-    def get_std(self) -> num:
-        return self.std
+    def get_std(self, normalized_flag: bool = False) -> float:
+        return self.std_zscore if normalized_flag else self.std
 
-    def get_min(self) -> num:
-        return self.min
+    def get_min(self, normalized_flag: bool = False) -> float:
+        return self.min_zscore if normalized_flag else self.min
 
-    def get_percentile_25(self) -> num:
-        return self.percentile_25
+    def get_percentile_25(self, normalized_flag: bool = False) -> float:
+        return self.percentile_25_zscore if normalized_flag else self.percentile_25
 
-    def get_percentile_50(self) -> num:
-        return self.percentile_50
+    def get_percentile_50(self, normalized_flag: bool = False) -> float:
+        return self.percentile_50_zscore if normalized_flag else self.percentile_50
 
-    def get_percentile_75(self) -> num:
-        return self.percentile_75
+    def get_percentile_75(self, normalized_flag: bool = False) -> float:
+        return self.percentile_75_zscore if normalized_flag else self.percentile_75
 
-    def get_max(self) -> num:
-        return self.max
+    def get_max(self, normalized_flag: bool = False) -> float:
+        return self.max_zscore if normalized_flag else self.max
     
-    def get_data_zscore(self):
+    def get_data_zscore(self) -> List[float]:
         return self.data_zscore
