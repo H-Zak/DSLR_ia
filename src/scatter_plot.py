@@ -95,7 +95,6 @@ def execute_plotter_feature(house_classes_data : dict, classes : tuple, feature 
     data_to_be_plotted = extract_house_feature_data(house_classes_data, first_class, second_class, feature, normalized_flag)
     # Getting plot name
     plot_name = get_name_for_plot(first_class, second_class, feature, normalized_flag)
-    print(plot_name)
     # Plotting
     scatter_plot((first_class, second_class), data_to_be_plotted, plot_name)
 

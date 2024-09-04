@@ -6,6 +6,7 @@ import os
 import time
 import itertools
 import curses
+import matplotlib.pyplot as plt
 
 from typing import Union, List, Tuple
 
@@ -18,7 +19,7 @@ from modules.quick_sort import quick_sort
 # Import prompt
 from modules.prompt import prompt
 # Import plotters
-from modules.plotting import scatter_plot
+from modules.plotting import scatter_plot, plot_scatter_in_ax
 # Import utils
 from modules.utils import get_name_for_plot
 
@@ -66,7 +67,24 @@ def create_houses_list_of_course(df : pd.DataFrame ,hogwarts_houses: dict) -> di
 
     return courses_by_house
 
-# TODO
+def extract_classes_grades_data(house_classes_data : dict, class_name : str) -> dict:
+    
+    # Class data
+    class_data = get_class_data_from_houses(house_classes_data, class_name)    
+
+    data_to_be_plotted : dict = {
+        class_name : {},
+    }
+
+    # data_to_be_plotted = []
+
+    for house in house_classes_data:
+        data_to_be_plotted[class_data[house].get_name()][house] = class_data[house].get_describe_feature('grades', False)
+
+    print(data_to_be_plotted)
+
+    return data_to_be_plotted
+
 def extract_house_feature_data(house_classes_data,
                                first_class : str, second_class : str,
                                feature : str, normalized_flag : bool) -> dict:
@@ -87,16 +105,68 @@ def extract_house_feature_data(house_classes_data,
     return data_to_be_plotted
 
 
-# def execute_plotter_feature(house_classes_data : dict, classes : tuple, feature : str, normalized_flag : bool):
-#     # Extracting class from tuple
-#     first_class = classes[0]
-#     second_class = classes[1]
-#     # Getting data to be plotted
-#     data_to_be_plotted = extract_house_feature_data(house_classes_data, first_class, second_class, feature, normalized_flag)
-#     # Getting plot name
-#     plot_name = get_name_for_plot(first_class, second_class, feature, normalized_flag)
-#     # Plotting
-#     scatter_plot((first_class, second_class), data_to_be_plotted, plot_name)
+def execute_plotter_feature(house_classes_data : dict, classes : tuple, feature : str, normalized_flag : bool):
+    # Extracting class from tuple
+    first_class = classes[0]
+    second_class = classes[1]
+    # Getting data to be plotted
+    data_to_be_plotted = extract_house_feature_data(house_classes_data, first_class, second_class, feature, normalized_flag)
+    # Getting plot name
+    plot_name = get_name_for_plot(first_class, second_class, feature, normalized_flag)
+    # Plotting
+    scatter_plot((first_class, second_class), data_to_be_plotted, plot_name)
+
+def pair_plot(house_classes_data : dict, list_classes : list):
+
+    list_classes_test = ['Arithmancy', 'Astronomy']
+
+    f = plt.figure()
+    f, axes = plt.subplots(nrows = len(list_classes_test), ncols = len(list_classes_test), sharex=False, sharey = False)
+
+    for i, first_class in enumerate(list_classes_test):
+        for j, second_class in enumerate(list_classes_test):
+            print(f'{i}-{j}')
+            ax = axes[i][j]
+            if i != j:
+                data_to_be_plotted = extract_house_feature_data(house_classes_data, first_class, second_class, 'grades', False)
+                plot_scatter_in_ax(data_to_be_plotted, ax, (first_class, second_class))
+            else:
+                ax.set_visible(False)
+
+    plt.tight_layout()
+    plt.savefig('./plots/pair_plot.png')
+    print(f'The plot has been saved in ./plots/pair_plot.png!')
+
+
+    # axes[0][0].scatter(getRand(100),getRand(100), c = getRand(100), marker = "x")
+    # axes[0][0].set_xlabel('Crosses', labelpad = 5)
+
+    # axes[0][1].scatter(getRand(100),getRand(100), c = getRand(100), marker = 'o')
+    # axes[0][1].set_xlabel('Circles', labelpad = 5)
+
+    # axes[1][0].scatter(getRand(100),getRand(100), c = getRand(100), marker = '*')
+    # axes[1][0].set_xlabel('Stars')
+
+    # axes[1][1].scatter(getRand(100),getRand(100), c = getRand(100), marker = 's' )
+    # axes[1][1].set_xlabel('Squares')
+
+    # for house in house_classes_data:
+    #     for first_class in list_classes_test:
+    #         for second_class in list_classes_test:
+    #             if first_class == second_class:
+    #                 print(f"Histogram  of {first_class}")
+    #         else:
+    #             data_to_be_plotted = extract_house_feature_data(house_classes_data, first_class, second_class, 'grades', False)
+    #             axes[0][0].scatter(getRand(100),getRand(100), c = getRand(100), marker = "x")
+    #             first_class_scores = data_to_be_plotted[first_class][house]
+    #             second_class_scores = data_to_be_plotted[second_class][house]
+        
+    #             plt.scatter(first_class_scores, second_class_scores,
+    #                         label=house,
+    #                         color=house_colors[house],
+    #                         alpha=0.6)
+    #             # print(f"Scatter plot of {first_class}-{second_class}")
+    #             # print(extract_house_feature_data(house_classes_data, first_class, second_class, 'grades', False))
 
 def main():
     try:
@@ -108,25 +178,15 @@ def main():
         # Getting all the columns with numeric values
         numeric_df = select_numeric_columns(df)
         # Getting names of the numeric columns
-        list_courses = [column for column in numeric_df.columns if column != "Index"]
-        print(list_courses)
+        list_classes = [column for column in numeric_df.columns if column != "Index"]
 
-        for first_course in list_courses:
-            for second_course in list_courses:
-                if first_course == second_course:
-                    print(f"Histogram {first_course}-{second_course}")
-                    print(numeric_df[first_course])
-                    print('-----------------------')
-                    print(numeric_df[second_course])
-                    return
-                # else:
-                #     print(f"Scatter plot {first_course}-{second_course}")
-        
         # Get name of Hogwarts classes
         unique_houses = df['Hogwarts House'].unique()
-
+        
         # Getting main data structure
         house_classes_data = create_houses_list_of_course(df, unique_houses)
+
+        pair_plot(house_classes_data, list_classes)
 
     except ValueError as e:
         print(e)
