@@ -59,7 +59,7 @@ def plot_scatter_in_ax(data_to_be_plotted, ax, classes: Tuple[str, str]):
         'Slytherin': 'green'
     }
 
-    print(data_to_be_plotted)
+    # print(data_to_be_plotted)
 
     houses = data_to_be_plotted[classes[0]].keys()
 
@@ -72,10 +72,12 @@ def plot_scatter_in_ax(data_to_be_plotted, ax, classes: Tuple[str, str]):
                     color=house_colors[house],
                     alpha=0.6)
 
-    ax.xlabel(classes[0])
-    ax.ylabel(classes[1])
-    # Adding the legends
-    ax.legend()
+    ax.set_xlabel(classes[0])
+    ax.set_ylabel(classes[1])
+    ax.tick_params(axis='both', which='major', labelsize=6)
+    if ax.is_first_col() or ax.is_first_row():
+        ax.legend(fontsize=6)
+
 
 
 # def pair_plot(house_classes_data : dict, list_classes : list):

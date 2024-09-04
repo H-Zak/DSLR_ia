@@ -6,6 +6,7 @@ import os
 import time
 import itertools
 import curses
+import seaborn as sns
 import matplotlib.pyplot as plt
 
 from typing import Union, List, Tuple
@@ -116,26 +117,63 @@ def execute_plotter_feature(house_classes_data : dict, classes : tuple, feature 
     # Plotting
     scatter_plot((first_class, second_class), data_to_be_plotted, plot_name)
 
+def pair_plot_all_axes(house_classes_data: dict, list_classes: list):
+    # Convertimos los datos a un DataFrame para facilitar la manipulación con Seaborn
+    df = pd.DataFrame()
+    for house, points in house_classes_data.items():
+        temp_df = pd.DataFrame(points)
+        temp_df['House'] = house
+        df = pd.concat([df, temp_df], ignore_index=True)
+    
+    # Usamos seaborn para generar el pairplot
+    sns.pairplot(df, hue="House", markers=["o", "s", "D"], 
+                 plot_kws={'alpha': 0.5, 's': 15})  # Ajustamos la transparencia y el tamaño de los puntos
+    
+    plt.show()
+
 def pair_plot(house_classes_data : dict, list_classes : list):
 
-    list_classes_test = ['Arithmancy', 'Astronomy']
-
-    f = plt.figure()
-    f, axes = plt.subplots(nrows = len(list_classes_test), ncols = len(list_classes_test), sharex=False, sharey = False)
-
-    for i, first_class in enumerate(list_classes_test):
-        for j, second_class in enumerate(list_classes_test):
-            print(f'{i}-{j}')
-            ax = axes[i][j]
+    num_classes = len(list_classes)
+    fig, axes = plt.subplots(nrows=num_classes, ncols=num_classes, figsize=(15, 15))
+    
+    for i, x_class in enumerate(list_classes):
+        for j, y_class in enumerate(list_classes):
+            ax = axes[i, j]
             if i != j:
-                data_to_be_plotted = extract_house_feature_data(house_classes_data, first_class, second_class, 'grades', False)
-                plot_scatter_in_ax(data_to_be_plotted, ax, (first_class, second_class))
+                for house, points in data.items():
+                    ax.scatter(points[x_class], points[y_class], label=house, alpha=0.7)
+                if i == num_classes - 1:
+                    ax.set_xlabel(x_class, fontsize=8)
+                if j == 0:
+                    ax.set_ylabel(y_class, fontsize=8)
+                if j == 0 and i == 0:
+                    ax.legend(fontsize=6)
             else:
-                ax.set_visible(False)
+                ax.hist(data[list(data.keys())[0]][x_class], bins=10, alpha=0.7, color='gray')
 
     plt.tight_layout()
-    plt.savefig('./plots/pair_plot.png')
-    print(f'The plot has been saved in ./plots/pair_plot.png!')
+    plt.show()
+    
+    # list_classes_test = ['Arithmancy', 'Astronomy']
+    # num_classes = len(list_classes)
+    
+    # f, axes = plt.subplots(nrows=num_classes, ncols=num_classes, figsize=(num_classes * 2, num_classes * 2))
+    # # f, axes = plt.subplots(nrows = len(list_classes_test), ncols = len(list_classes_test), sharex=False, sharey = False)
+
+    # for i, first_class in enumerate(list_classes):
+    #     for j, second_class in enumerate(list_classes):
+    #         print(f'{i}-{j}')
+    #         ax = axes[i][j]
+    #         if i != j:
+    #             data_to_be_plotted = extract_house_feature_data(house_classes_data, first_class, second_class, 'grades', False)
+    #             plot_scatter_in_ax(data_to_be_plotted, ax, (first_class, second_class))
+    #         else:
+    #             ax.set_visible(False)
+    #             sns.histplot(house_classes_data, x=first_class, ax=ax, kde=True)
+
+    # plt.tight_layout()
+    # plt.savefig('./plots/pair_plot.png')
+    # print(f'The plot has been saved in ./plots/pair_plot.png!')
 
 
     # axes[0][0].scatter(getRand(100),getRand(100), c = getRand(100), marker = "x")
