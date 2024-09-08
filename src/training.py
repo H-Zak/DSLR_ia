@@ -22,9 +22,8 @@ def plot_pair_grid(data, list_classes):
             ax.set_xlabel(x_class, fontsize=8)
 
     plt.tight_layout()
-    plt.show()
+    plt.savefig('./plots/training.png')
 
-# Ejemplo de uso:
 house_classes_data = {
     'Gryffindor': {'Arithmancy': [1, 2, 3, 4], 'Astronomy': [4, 5, 6, 7], 'Herbology': [2, 3, 4, 5]},
     'Slytherin': {'Arithmancy': [7, 8, 9, 10], 'Astronomy': [10, 11, 12, 13], 'Herbology': [3, 4, 5, 6]},
