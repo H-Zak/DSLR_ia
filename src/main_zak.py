@@ -9,40 +9,27 @@ from classes.Course import Course
 # Import algo for sort
 from modules.quick_sort import quick_sort
 
-def sort_column(df : pd.DataFrame, name_column : str) -> np.ndarray:
-    column_data = df[name_column].values
-
-    column_with_no_nan = [num for num in column_data if not math.isnan(num)]
-
-    column_data_sorted = quick_sort(column_with_no_nan)
-
-    # print(column_data_sorted)
-
-    return column_data_sorted
-
+def select_numeric_columns(df : pd.DataFrame) -> pd.DataFrame:
+    return df.select_dtypes(include=np.number)
 
 def get_tab_courses(df : pd.DataFrame) -> List[Course]:
     courses : List[Course] = []
     # Getting all the columns with numeric values
-    numeric_df = df.select_dtypes(include=np.number)
-    
-
+    numeric_df = select_numeric_columns(df)
     # Getting name of the numeric columns
-    list_courses = [column for column in numeric_df.columns if column != "Index"]
-    # print(list_courses)
+    list_classes = [column for column in numeric_df.columns if column != "Index"]
     # Sorting data
-    for course in list_courses:
-        print(course)
-        sort_data_course = sort_column(numeric_df, course)
-        new_course = Course(course, numeric_df[course], sort_data_course)
+    for course in list_classes:
+        # sort_data_course = sort_column(numeric_df, course)
+        new_course = Course(course, numeric_df[course], True)
         courses.append(new_course)
 
     return courses
 
+
 def describe_data_house(path_to_data_file : str):
     # Reading data
     df = pd.read_csv(path_to_data_file)
-
 
     houses = df['Hogwarts House'].unique()
     print(houses)
@@ -61,7 +48,6 @@ def describe_data(path_to_data_file : str):
 
     for course in courses_data:
         print(course)
-
 
 
 def main():

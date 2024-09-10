@@ -55,18 +55,15 @@ def get_class_data_from_houses(house_courses : dict, course_searched : str) -> d
 
     return grades_of_house
 
-def create_houses_list_of_course(df : pd.DataFrame ,hogwarts_houses: dict) -> dict:
-    # unique_houses = hogwarts_data['Hogwarts House'].unique()
+def create_houses_list_of_course(df : pd.DataFrame, hogwarts_houses: dict) -> dict:
     courses_by_house = {}
     # Dict {'House' : List[Course]}
     for house in hogwarts_houses:
         house_data = df[df['Hogwarts House'] == house]
         courses_by_house[house] = get_tab_courses(house_data)
-        # print(courses_by_house)
 
     return courses_by_house
 
-# TODO
 def extract_house_feature_data(house_classes_data,
                                first_class : str, second_class : str,
                                feature : str, normalized_flag : bool) -> dict:
@@ -104,7 +101,6 @@ def generate_all_the_scatter_plots_of_grades(house_classes_data : dict, list_cla
             for second_class in list_classes:
                 if first_class != second_class:
                     execute_plotter_feature(house_classes_data, (first_class, second_class), 'grades', False)
-                    # execute_plotter_feature(house_classes_data, (first_class, second_class), 'grades', True)
 
 def main():
     try:
@@ -117,7 +113,6 @@ def main():
         numeric_df = select_numeric_columns(df)
         # Getting names of the numeric columns
         list_classes = [column for column in numeric_df.columns if column != "Index"]
-        # print(list_classes)
         
         # Get name of Hogwarts classes
         unique_houses = df['Hogwarts House'].unique()
@@ -137,7 +132,6 @@ def main():
                 return
             
             if feature == 'all_scatter_plots_grades':
-                print("All plots!")
                 generate_all_the_scatter_plots_of_grades(house_classes_data, list_classes)
                 exit()
             

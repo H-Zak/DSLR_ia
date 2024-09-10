@@ -117,43 +117,57 @@ def execute_plotter_feature(house_classes_data : dict, classes : tuple, feature 
     # Plotting
     scatter_plot((first_class, second_class), data_to_be_plotted, plot_name)
 
-def pair_plot_all_axes(house_classes_data: dict, list_classes: list):
-    # Convertimos los datos a un DataFrame para facilitar la manipulación con Seaborn
-    df = pd.DataFrame()
-    for house, points in house_classes_data.items():
-        temp_df = pd.DataFrame(points)
-        temp_df['House'] = house
-        df = pd.concat([df, temp_df], ignore_index=True)
+# def pair_plot_all_axes(house_classes_data: dict, list_classes: list):
+#     # Convertimos los datos a un DataFrame para facilitar la manipulación con Seaborn
+#     df = pd.DataFrame()
+#     for house, points in house_classes_data.items():
+#         temp_df = pd.DataFrame(points)
+#         temp_df['House'] = house
+#         df = pd.concat([df, temp_df], ignore_index=True)
     
-    # Usamos seaborn para generar el pairplot
-    sns.pairplot(df, hue="House", markers=["o", "s", "D"], 
-                 plot_kws={'alpha': 0.5, 's': 15})  # Ajustamos la transparencia y el tamaño de los puntos
+#     # Usamos seaborn para generar el pairplot
+#     sns.pairplot(df, hue="House", markers=["o", "s", "D"], 
+#                  plot_kws={'alpha': 0.5, 's': 15})  # Ajustamos la transparencia y el tamaño de los puntos
     
     plt.show()
+
+def search_classes_by_name(house_data : dict, class_searched : str):
+    for class_name in house_data:
+        if class_name.get_name() == class_searched:
+            return class_name.get_describe_feature('grades')
+        
+def single_scatter_plot(ax, house_classes_data : dict, x_class : str, y_class : str):
+    for house in house_classes_data:
+        notes_house_x_class = search_classes_by_name(house_classes_data[house], x_class)
+        notes_house_y_class = search_classes_by_name(house_classes_data[house], y_class)
+        ax.scatter(notes_house_x_class, notes_house_y_class, label=house, alpha=0.7)
 
 def pair_plot(house_classes_data : dict, list_classes : list):
 
     num_classes = len(list_classes)
-    fig, axes = plt.subplots(nrows=num_classes, ncols=num_classes, figsize=(15, 15))
+    fig, axes = plt.subplots(nrows=num_classes, ncols=num_classes, figsize=(50, 50))
     
     for i, x_class in enumerate(list_classes):
         for j, y_class in enumerate(list_classes):
             ax = axes[i, j]
             if i != j:
-                for house, points in data.items():
-                    ax.scatter(points[x_class], points[y_class], label=house, alpha=0.7)
-                if i == num_classes - 1:
-                    ax.set_xlabel(x_class, fontsize=8)
-                if j == 0:
-                    ax.set_ylabel(y_class, fontsize=8)
-                if j == 0 and i == 0:
-                    ax.legend(fontsize=6)
+                single_scatter_plot(ax, house_classes_data, x_class, y_class)
+            # else:
+                # notes_house_y_class = search_classes_by_name(house_classes_data[house], y_class)
+                # ax.hist(data[list(data.keys())[0]][x_class], bins=10, alpha=0.7, color='gray')
             else:
-                ax.hist(data[list(data.keys())[0]][x_class], bins=10, alpha=0.7, color='gray')
+                for house in house_classes_data:
+                    course_data = search_classes_by_name(house_classes_data[house], x_class)
+                    ax.hist(course_data, bins=10, alpha=0.5, label=house)
+            # Labels
+            if j == 0:
+                ax.set_ylabel(x_class, fontsize=8)
+            if i == (num_classes - 1):
+                ax.set_xlabel(y_class, fontsize=8)
 
     plt.tight_layout()
-    plt.show()
-    
+    plt.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.05, hspace=0.2, wspace=0.2)
+    fig.savefig('pair_plot_large.png', dpi=300, bbox_inches='tight')
     # list_classes_test = ['Arithmancy', 'Astronomy']
     # num_classes = len(list_classes)
     
