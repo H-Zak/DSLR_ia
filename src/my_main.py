@@ -59,8 +59,7 @@ def get_class_data_from_houses(house_courses : dict, course_searched : str) -> d
 
     return grades_of_house
 
-def create_houses_list_of_course(df : pd.DataFrame ,hogwarts_houses: dict) -> dict:
-    # unique_houses = hogwarts_data['Hogwarts House'].unique()
+def create_houses_list_of_course(df : pd.DataFrame, hogwarts_houses: dict) -> dict:
     courses_by_house = {}
     # Dict {'House' : List[Course]}
     for house in hogwarts_houses:

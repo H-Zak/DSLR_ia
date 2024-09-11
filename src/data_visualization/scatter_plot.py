@@ -104,8 +104,6 @@ def generate_all_the_scatter_plots_of_grades(house_classes_data : dict, list_cla
 
 def main():
     try:
-        # describe_data('../datasets/dataset_train_2.csv')#exo 1
-
         # Reading data
         df = pd.read_csv('../datasets/dataset_train.csv')
 
