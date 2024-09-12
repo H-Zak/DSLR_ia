@@ -36,7 +36,6 @@ class Course:
             self.percentile_75_zscore = self.init_percentile(0.75, self.data_zscore)
             self.max_zscore = self.init_max_value(self.data_zscore)
             self.min_zscore= self.init_min_value(self.data_zscore) 
-   
     def __str__(self) -> str:
         return (f'Course: {self.name}\n'
                 f'  Count:      {self.count}\n'
