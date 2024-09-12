@@ -45,7 +45,6 @@ def logistic_regression(data_x: np.ndarray, data_y: np.ndarray, max_iterations :
     i = 0
     while True:
         # Performing predictions
-        # print(w)
         predictions = sigmoid_function(np.dot(data_x, w))
         # Perfoming derivatives for gradient descent decision
         dj_dw = derivative_of_w(predictions, data_x, data_y)
@@ -66,7 +65,6 @@ def logistic_regression(data_x: np.ndarray, data_y: np.ndarray, max_iterations :
         w = new_w
         i += 1
 
-    print(w)
     plot_cost_function_scatter(iterations, costs)
     return w
 
@@ -125,7 +123,6 @@ def get_single_sample_from_dataset_test(index : int, list_classes : str):
 
 def main():
     try:
-        # describe_data('../datasets/dataset_train_2.csv')#exo 1
         print("Logistic regression")
         # Reading data
         df = pd.read_csv('../datasets/dataset_train.csv')
