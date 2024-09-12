@@ -1,5 +1,5 @@
 all:
-	@echo "No idea"
+	@python -m logistic_regression.main
 
 describe:
 	@python -m data_analysis.main
@@ -12,3 +12,5 @@ scatter_plot:
 
 pair_plot:
 	@python -m data_visualization.pair_plot
+
+.PHONY: describe histogram scatter_plot pair_plot
