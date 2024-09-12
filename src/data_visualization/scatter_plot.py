@@ -1,43 +1,15 @@
 import pandas as pd
-import numpy as np
-import math
-import sys
-import os
 import time
-import itertools
 import curses
 
-from typing import Union, List, Tuple
-
-# Import course
-from classes.Course import Course
 # Import exceptions
 from exceptions.CourseNotFound import CourseNotFound
-# Import algo for sort
-from modules.quick_sort import quick_sort
 # Import prompt
 from modules.prompt import prompt
 # Import plotters
 from modules.plotting import scatter_plot
 # Import utils
-from modules.utils import get_name_for_plot
-
-def select_numeric_columns(df : pd.DataFrame) -> pd.DataFrame:
-    return df.select_dtypes(include=np.number)
-
-def get_tab_courses(df : pd.DataFrame) -> List[Course]:
-    courses : List[Course] = []
-    # Getting all the columns with numeric values
-    numeric_df = select_numeric_columns(df)
-    # Getting name of the numeric columns
-    list_classes = [column for column in numeric_df.columns if column != "Index"]
-    # Sorting data
-    for course in list_classes:
-        # sort_data_course = sort_column(numeric_df, course)
-        new_course = Course(course, numeric_df[course], True)
-        courses.append(new_course)
-
-    return courses
+from modules.utils import create_houses_list_of_course, get_name_for_plot, select_numeric_columns
 
 def get_class_data_from_houses(house_courses : dict, course_searched : str) -> dict:
 
@@ -54,15 +26,6 @@ def get_class_data_from_houses(house_courses : dict, course_searched : str) -> d
         raise CourseNotFound(course_searched)
 
     return grades_of_house
-
-def create_houses_list_of_course(df : pd.DataFrame, hogwarts_houses: dict) -> dict:
-    courses_by_house = {}
-    # Dict {'House' : List[Course]}
-    for house in hogwarts_houses:
-        house_data = df[df['Hogwarts House'] == house]
-        courses_by_house[house] = get_tab_courses(house_data)
-
-    return courses_by_house
 
 def extract_house_feature_data(house_classes_data,
                                first_class : str, second_class : str,
@@ -95,12 +58,12 @@ def execute_plotter_feature(house_classes_data : dict, classes : tuple, feature 
     # Plotting
     scatter_plot((first_class, second_class), data_to_be_plotted, plot_name)
 
-def generate_all_the_scatter_plots_of_grades(house_classes_data : dict, list_classes : list):
+def generate_all_the_scatter_plots_of_grades(house_classes_data : dict, list_courses : list):
 
-    for first_class in list_classes:
-            for second_class in list_classes:
-                if first_class != second_class:
-                    execute_plotter_feature(house_classes_data, (first_class, second_class), 'grades', False)
+    for first_class in list_courses:
+        for second_class in list_courses:
+            if first_class != second_class:
+                execute_plotter_feature(house_classes_data, (first_class, second_class), 'grades', False)
 
 def main():
     try:
@@ -110,13 +73,13 @@ def main():
         # Getting all the columns with numeric values
         numeric_df = select_numeric_columns(df)
         # Getting names of the numeric columns
-        list_classes = [column for column in numeric_df.columns if column != "Index"]
+        list_courses = [column for column in numeric_df.columns if column != "Index"]
         
         # Get name of Hogwarts classes
         unique_houses = df['Hogwarts House'].unique()
 
         # Getting main data structure
-        house_classes_data = create_houses_list_of_course(df, unique_houses)
+        house_classes_data = create_houses_list_of_course(df, unique_houses, list_courses)
 
         feature : str = ''
         first_class : str = ''
@@ -130,17 +93,17 @@ def main():
                 return
             
             if feature == 'all_scatter_plots_grades':
-                generate_all_the_scatter_plots_of_grades(house_classes_data, list_classes)
+                generate_all_the_scatter_plots_of_grades(house_classes_data, list_courses)
                 exit()
-            
-            first_class = curses.wrapper(lambda stdscr: prompt(stdscr, list_classes, "Choose first class:\n", False))
+
+            first_class = curses.wrapper(lambda stdscr: prompt(stdscr, list_courses, "Choose first class:\n", False))
             if first_class == 'EXIT':
                 return
-            second_class = curses.wrapper(lambda stdscr: prompt(stdscr, list_classes, "Choose second class:\n", False))
+            second_class = curses.wrapper(lambda stdscr: prompt(stdscr, list_courses, "Choose second class:\n", False))
             if second_class == 'EXIT':
                 return
             # Validating classes choices
-            if feature != second_class:
+            if first_class != second_class:
                 normalized_choice = curses.wrapper(lambda stdscr: prompt(stdscr, ['Yes', 'No'], "Normalized data?\n", False))
                 if normalized_choice == "Yes":
                     normalized_data_flag = True
