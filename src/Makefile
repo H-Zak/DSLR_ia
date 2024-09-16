@@ -14,6 +14,6 @@ pair_plot:
 	@python -m data_visualization.pair_plot
 
 training:
-	@python -m data_visualization.training_board
+	@python3 -m data_visualization.training_board
 
 .PHONY: describe histogram scatter_plot pair_plot

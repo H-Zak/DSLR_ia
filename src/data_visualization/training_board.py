@@ -21,6 +21,7 @@ from modules.utils import create_houses_list_of_course, get_name_for_plot, selec
 # Import course
 from classes.Course import Course
 
+from logistic_regression.main import logistic_regression, predict, get_single_sample_from_dataset_test
 
 def select_numeric_columns(df : pd.DataFrame) -> pd.DataFrame:
     return df.select_dtypes(include=np.number)
@@ -58,7 +59,7 @@ def get_class_data_from_houses(house_courses : dict, course_searched : str) -> d
 
     grades_of_house : dict = {}
     course_found : bool = False
-        
+
     for house in house_courses:
         for course in house_courses[house]:
             if course.get_name() == course_searched:
@@ -73,9 +74,9 @@ def get_class_data_from_houses(house_courses : dict, course_searched : str) -> d
 def extract_house_feature_data(house_classes_data,
                                first_class : str, second_class : str,
                                feature : str, normalized_flag : bool) -> dict:
-    
 
-    first_class_data = get_class_data_from_houses(house_classes_data, first_class)    
+
+    first_class_data = get_class_data_from_houses(house_classes_data, first_class)
     second_class_data = get_class_data_from_houses(house_classes_data, second_class)
 
     data_to_be_plotted : dict = {
@@ -112,7 +113,7 @@ def generate_all_the_scatter_plots_of_grades(house_classes_data : dict, list_cou
 #creer des listes temporaires a remplir, pour cela on donne la possibilite de choisir des cours
 #Soit choisir un cours existant, soit donner la possibilite de creer une combinaison
 #Creer un bouton pour mettre fin a la selection (peut etre mettre un maximum le nombre de cours choisis)
-# lancer le training 
+# lancer le training
 #enregistrer dans un dossier les listes avec avec un taux de reussite elever, avec le nom des listes et le pourcentage de resultat
 
 # Gryffindor = 1
@@ -126,30 +127,30 @@ def generate_all_the_scatter_plots_of_grades(house_classes_data : dict, list_cou
 def prepare_data(chosen_data, data):
     print("start preparation of data")
     courses = []
-    result = Course('Hogwarts House', data['Hogwarts House'].dropna().tolist())
+    result = Course('Hogwarts House', data['Hogwarts House'].tolist(), True)
     # print(result.raw_data)
-    # courses.append(Course('Hogwarts House', data['Hogwarts House'].dropna().tolist()))
+    # courses.append(Course('Hogwarts House', data['Hogwarts House'].tolist()))
     for course in chosen_data:
         if '/' in course:
             print("combinaison")
             parts = course.split('/')
             combined_data = []
             for part in parts:
-                course_data = data[part].dropna().tolist()
+                course_data = data[part].tolist()
                 combined_data.append(course_data)
             combined_mean_data = np.mean(combined_data, axis=0).tolist()
             courses.append(Course(course, combined_mean_data, True))
         else:
             print("not combinaison")
-            course_data = data[course].dropna().tolist()
+            course_data = data[course].tolist()
             courses.append(Course(course, course_data, True))
     for course in courses:
         print(course.name)
     df_courses = pd.DataFrame()
 
     for course in courses:
-        df_courses[course.name] = pd.Series(course.data_sorted)
-        print("here 1" ,len(course.data_sorted), len(course.raw_data), course.count)
+        df_courses[course.name] = pd.Series(course.data_zscore)
+        print("here 1" ,len(course.data_zscore), len(course.raw_data), course.count)
         print("HERE", len(df_courses[course.name]))
     num_rows = len(df_courses)
     num_cols = len(courses) + 1 #car il a Hogwarts House qui n'est pas un cours, donc pas besoin de faire +1
@@ -162,8 +163,8 @@ def prepare_data(chosen_data, data):
     output_slytherin = np.zeros((num_rows, 1))
     output_ravenclaw = np.zeros((num_rows, 1))
     output_hufflepuff = np.zeros((num_rows, 1))
-    print("longeur des resultat",len(result.data_sorted))
-    for i, house in enumerate(result.data_sorted):
+    print("longeur des resultat",len(result.data_zscore))
+    for i, house in enumerate(result.data_zscore):
         if house == 1:  # Gryffindor
             output_gryffindor[i] = 1
         elif house == 2:  # Slytherin
@@ -172,7 +173,7 @@ def prepare_data(chosen_data, data):
             output_ravenclaw[i] = 1
         elif house == 4:  # Hufflepuff
             output_hufflepuff[i] = 1
-        
+
     theta = np.zeros((num_cols, 1))
     print("input data:\n", input_matrix)
     # print("Output Gryffindor:\n", output_gryffindor)
@@ -180,7 +181,8 @@ def prepare_data(chosen_data, data):
     # print("Output Ravenclaw:\n", output_ravenclaw)
     # print("Output Hufflepuff:\n", output_hufflepuff)
     # print("Theta:\n", theta)
-    
+    return input_matrix, output_gryffindor, output_hufflepuff, output_ravenclaw, output_slytherin
+
     # matrix = df_courses.to_numpy()
 
 def main():
@@ -242,33 +244,29 @@ def main():
             print("no courses were chosen")
         else:
             print("chosen course")
-            prepare_data(chosen_courses, numeric_df)
+            data_x, output_gryffindor, output_hufflepuff, output_ravenclaw, output_slytherin = prepare_data(chosen_courses, numeric_df)
 
+            w_1 = logistic_regression(data_x, output_gryffindor, 5)
+            w_2 = logistic_regression(data_x, output_hufflepuff, 5)
+            w_3 = logistic_regression(data_x, output_ravenclaw, 5)
+            w_4 = logistic_regression(data_x, output_slytherin, 5)
+            for i in range(50):
+                data_test = get_single_sample_from_dataset_test(i, chosen_courses)
 
-            # print(chosen_courses)
-            # if feature == 'all_scatter_plots_grades':
-            #     generate_all_the_scatter_plots_of_grades(house_classes_data, list_courses)
-            #     exit()
+                predictions_1 = predict(data_test, w_1)
+                predictions_2 = predict(data_test, w_2)
+                predictions_3 = predict(data_test, w_3)
+                predictions_4 = predict(data_test, w_4)
 
-        #     first_class = curses.wrapper(lambda stdscr: prompt(stdscr, list_courses, "Choose first class:\n", False))
-        #     if first_class == 'EXIT':
-        #         return
-        #     second_class = curses.wrapper(lambda stdscr: prompt(stdscr, list_courses, "Choose second class:\n", False))
-        #     if second_class == 'EXIT':
-        #         return
-        #     # Validating classes choices
-        #     if first_class != second_class:
-        #         normalized_choice = curses.wrapper(lambda stdscr: prompt(stdscr, ['Yes', 'No'], "Normalized data?\n", False))
-        #         if normalized_choice == "Yes":
-        #             normalized_data_flag = True
-        #         elif normalized_choice == 'EXIT':
-        #             return
-        #         break
-        #     else:
-        #         print("The classes choised must be different")
-        #         time.sleep(2)
-
-        # execute_plotter_feature(house_classes_data, (first_class, second_class), feature, normalized_data_flag)
+                if predictions_1 == 1:
+                    print(f'Index {i} is gry')
+                if predictions_2 == 1:
+                    print(f'Index {i} is huff')
+                if predictions_3 == 1:
+                    print(f'Index {i} is Ravenclaw')
+                if predictions_4 == 1:
+                    print(f'Index {i} is sly')
+                # print(w_1, w_2, w_3, w_4)
 
     except ValueError as e:
         print(e)

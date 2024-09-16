@@ -15,11 +15,15 @@ def derivative_of_w(predictions : np.ndarray, data_x : np.ndarray, data_y : np.n
     m: int = data_x.shape[0]
 
     data_x_transpose = data_x.transpose()
+    data_y = data_y.flatten()#car predicition est de forme applatit
+
 
     deviation = np.matmul(data_x_transpose, (predictions - data_y))
+    deviation = deviation * (1/ m)
 
-    derivative_of_w : float = (1 / m) * np.sum(deviation, axis=0)
-    return derivative_of_w
+
+    # derivative_of_w : float = (1 / m) * np.sum(deviation, axis=0)
+    return deviation
 
 def sigmoid_function(z : np.ndarray) -> np.ndarray:
     return 1 / (1 + np.exp(-z))
@@ -36,6 +40,7 @@ def compute_cost_ft(data_x : np.ndarray, data_y : np.ndarray, weigths : np.ndarr
 def logistic_regression(data_x: np.ndarray, data_y: np.ndarray, max_iterations : int, tolerance: float = 1e-6) -> None:
     # Init weigths
     w = np.zeros(data_x.shape[1])
+
     # Learning rate
     learning_rate = 0.0001
     # For plot function
@@ -46,11 +51,17 @@ def logistic_regression(data_x: np.ndarray, data_y: np.ndarray, max_iterations :
     while True:
         # Performing predictions
         # print(w)
+
         predictions = sigmoid_function(np.dot(data_x, w))
         # Perfoming derivatives for gradient descent decision
+
         dj_dw = derivative_of_w(predictions, data_x, data_y)
         # New array of weigths
+
+
         new_w = w - learning_rate * dj_dw
+
+
 
         # Computing costs for plot
         if i % 100 == 0:
@@ -76,7 +87,7 @@ def predict(data_x: np.ndarray, w: np.ndarray) -> np.ndarray:
     probabilities = sigmoid_function(z)
 
     predictions = (probabilities >= 0.5).astype(int)
-    
+
     return predictions
 
 
@@ -88,7 +99,7 @@ def map_hogwarts_house_to_class(hogwarts_house : str):
             return 0
         case _:
             raise ValueError(f"Unknown Hogwarts House")
-        
+
 def get_x_matrix(numeric_df, list_classes):
     matrix_values = []
     for course in list_classes:
@@ -103,24 +114,24 @@ def get_x_matrix(numeric_df, list_classes):
 
 def get_single_sample_from_dataset_test(index : int, list_classes : str):
     df = pd.read_csv('../datasets/dataset_train_3.csv')
-    
+
     if index not in df.index:
         raise ValueError(f"Not index found in DataFrame.")
-    
+
     example = df.loc[index]
 
     print(example['Last Name'])
-    
+
     means = df[list_classes].mean()
     stds = df[list_classes].std()
-    
+
     examples_notes = [1.0]
-    
+
     for subject in list_classes:
         if subject in example.index:
             normalized_note = (example[subject] - means[subject]) / stds[subject]
             examples_notes.append(normalized_note)
-    
+
     return np.array(examples_notes)
 
 def main():
