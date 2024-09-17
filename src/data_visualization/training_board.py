@@ -9,6 +9,7 @@ import pandas as pd
 import time
 import curses
 import sys
+from classes.ClassBinarizer import ClassBinarizer
 
 # Import exceptions
 from exceptions.CourseNotFound import CourseNotFound
@@ -238,8 +239,10 @@ def main():
         # with open('../datasets/dataset_train_3.csv') as file :
         df = pd.read_csv('../datasets/dataset_train_3.csv')
 
+
         # Get name of Hogwarts classes
         unique_houses = df['Hogwarts House'].unique()
+        binarizer = ClassBinarizer(unique_houses)
             # Dictionnaire de correspondance
         house_mapping = {
             'Gryffindor': 1,
@@ -296,49 +299,58 @@ def main():
         else:
             print("chosen course")
             data_x, output_gryffindor, output_hufflepuff, output_ravenclaw, output_slytherin, df_courses = prepare_data(chosen_courses, numeric_df)
+            predictions_list = []
+            df2 = pd.read_csv('../datasets/dataset_train_3.csv')
 
-            expected_results = []
-            predicted_results = []
-            w_1 = logistic_regression(data_x, output_gryffindor)
-            w_2 = logistic_regression(data_x, output_hufflepuff)
-            w_3 = logistic_regression(data_x, output_ravenclaw)
-            w_4 = logistic_regression(data_x, output_slytherin)
+            for i, house in enumerate(unique_houses):
+                data_y_by_house = binarizer.binarize(df2['Hogwarts House'], house)
+                w = logistic_regression(data_x, data_y_by_house)
+                print(w)
+                predictions = predict(data_x, w)
+                predictions_list.append(predictions)
+
+            # expected_results = []
+            # predicted_results = []
+            # w_1 = logistic_regression(data_x, output_gryffindor)
+            # w_2 = logistic_regression(data_x, output_hufflepuff)
+            # w_3 = logistic_regression(data_x, output_ravenclaw)
+            # w_4 = logistic_regression(data_x, output_slytherin)
             # print("avant")
-            for i in range(50):
-                data_test = get_single_sample_from_dataset_test_2(i, chosen_courses)#jai modifie 
-                expected_results.append(df_courses['Hogwarts House'][i])
-                predictions_1 = predict(data_test, w_1)#jai modifie predict
-                predictions_2 = predict(data_test, w_2)
-                predictions_3 = predict(data_test, w_3)
-                predictions_4 = predict(data_test, w_4)
+            # for i in range(50):
+            #     data_test = get_single_sample_from_dataset_test_2(i, chosen_courses)#jai modifie 
+            #     expected_results.append(df_courses['Hogwarts House'][i])
+            #     # predictions_1 = predict(data_test, w_1)#jai modifie predict
+            #     # predictions_2 = predict(data_test, w_2)
+            #     # predictions_3 = predict(data_test, w_3)
+            #     # predictions_4 = predict(data_test, w_4)
 
-                predictions = [predictions_1, predictions_2, predictions_3, predictions_4]
-                max_prediction = max(predictions)
-                predictions = [1 if pred == max_prediction else 0 for pred in predictions]
-                predictions_1, predictions_2, predictions_3, predictions_4 = predictions
+            #     predictions = [predictions_1, predictions_2, predictions_3, predictions_4]
+            #     max_prediction = max(predictions)
+            #     predictions = [1 if pred == max_prediction else 0 for pred in predictions]
+            #     predictions_1, predictions_2, predictions_3, predictions_4 = predictions
 
-                if predictions_1 == 1:
-                    predicted_results.append(1)  # Gryffindor
-                elif predictions_2 == 1:
-                    predicted_results.append(2)  # Hufflepuff
-                elif predictions_3 == 1:
-                    predicted_results.append(3)  # Ravenclaw
-                elif predictions_4 == 1:
-                    predicted_results.append(4)  # Slytherin
+            #     if predictions_1 == 1:
+            #         predicted_results.append(1)  # Gryffindor
+            #     elif predictions_2 == 1:
+            #         predicted_results.append(2)  # Hufflepuff
+            #     elif predictions_3 == 1:
+            #         predicted_results.append(3)  # Ravenclaw
+            #     elif predictions_4 == 1:
+            #         predicted_results.append(4)  # Slytherin
 
-                print("What we expect",df_courses['Hogwarts House'][i])
-                if predictions_1 == 1:
-                    print(f'Index {i} is     1 : Gryffindor\n')
-                if predictions_2 == 1:
-                    print(f'Index {i} is     2 : Hufflepuff\n')
-                if predictions_3 == 1:
-                    print(f'Index {i} is     3 : Ravenclaw\n')
-                if predictions_4 == 1:
-                    print(f'Index {i} is     4 : Slytherin\n')
-            correct_predictions = sum([1 for expected, predicted in zip(expected_results, predicted_results) if expected == predicted])
-            total_predictions = len(expected_results)
-            success_rate = (correct_predictions / total_predictions) * 100
-            print(f'Success rate: {success_rate:.2f}%')
+            #     print("What we expect",df_courses['Hogwarts House'][i])
+            #     if predictions_1 == 1:
+            #         print(f'Index {i} is     1 : Gryffindor\n')
+            #     if predictions_2 == 1:
+            #         print(f'Index {i} is     2 : Hufflepuff\n')
+            #     if predictions_3 == 1:
+            #         print(f'Index {i} is     3 : Ravenclaw\n')
+            #     if predictions_4 == 1:
+            #         print(f'Index {i} is     4 : Slytherin\n')
+            # correct_predictions = sum([1 for expected, predicted in zip(expected_results, predicted_results) if expected == predicted])
+            # total_predictions = len(expected_results)
+            # success_rate = (correct_predictions / total_predictions) * 100
+            # print(f'Success rate: {success_rate:.2f}%')
                 # print(w_1, w_2, w_3, w_4)
 
     except ValueError as e:
