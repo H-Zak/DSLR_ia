@@ -1,61 +1,6 @@
-Arithmancy,Astronomy
+() Tasks
 
 
-Arithmancy,Astronomy,Herbology,Defense Against the Dark Arts,Divination,Muggle Studies,Ancient Runes,History of Magic,Transfiguration,Potions,Care of Magical Creatures,Charms,Flying
-
-Hola, vuelvo a preguntarte sobre como puedo interpretar la pregunta :
-
-What are the two features that are similar ?
-
-Ya que tengo un problema, cuando recupere los datos de mi .csv, hay algunos estudiantes que
-no tienen nota en algunas materias, y esto hace que la lista de datos no tenga la misma 
-longitud y esto es un problema para crear scatter plots, se que una forma de solucionarlo puede
-ser completando los datos faltantes con media u otras tecnicas para gestionar este caso.
-
-Crees que deba implementar algunas de estas tecnicas, o por el contrario para avanzar con mi
-proyecto, puedo interpretar la pregunta diferente y crear otro tipo de scatter plots, 
-teniendo en cuenta que tambien tengo en cuenta los valores de la funcion pandas.describe(mean, std,
-min, max, etc) disponible para crear mis scatter plots que me permitan responder la pregunta.
-
-Comparación de Distribuciones
-
-    Interpretación: Si en lugar de buscar correlación entre dos características, decides
-    comparar cómo se distribuye una característica en función de otra entre dos casas,
-    podrías encontrar similitudes en las distribuciones. Por ejemplo, si las puntuaciones
-    en "Defensa Contra las Artes Oscuras" están distribuidas de manera similar (en términos
-    de dispersión, media, etc.) en estudiantes de Gryffindor y Hufflepuff cuando se
-    grafican contra "Transfiguración", esto indicaría que estas dos casas son similares en estas áreas.
-    
-    Explicación: Si las distribuciones son parecidas, es probable que los estudiantes de
-    ambas casas compartan habilidades o desempeños similares en esas materias,
-    lo cual sería una respuesta válida a la pregunta.
-
-
-    2. Comparación de Distribuciones
-
-    Interpretación: Si en lugar de buscar correlación entre dos características, decides comparar cómo se distribuye una característica en función de otra entre dos casas, podrías encontrar similitudes en las distribuciones. Por ejemplo, si las puntuaciones en "Defensa Contra las Artes Oscuras" están distribuidas de manera similar (en términos de dispersión, media, etc.) en estudiantes de Gryffindor y Hufflepuff cuando se grafican contra "Transfiguración", esto indicaría que estas dos casas son similares en estas áreas.
-    Explicación: Si las distribuciones son parecidas, es probable que los estudiantes de ambas casas compartan habilidades o desempeños similares en esas materias, lo cual sería una respuesta válida a la pregunta.
-
-3. Agrupamiento de Datos
-
-    Interpretación: Al visualizar dos características en un scatter plot, podrías encontrar que los puntos que representan a los estudiantes de las dos casas se agrupan de manera muy parecida en ciertas áreas del gráfico. Este agrupamiento indicaría que los estudiantes de ambas casas tienen valores similares para esas dos características.
-    Explicación: Si ves que los puntos de ambas casas forman clusters o agrupaciones que se solapan o están muy cerca en el gráfico, esto indicaría que esas dos características son similares en cómo describen a los estudiantes de las casas comparadas.
-
-4. Comparación de Rango y Escala
-
-    Interpretación: Observando el rango (diferencia entre el valor máximo y mínimo) y la escala de los datos de dos características en el scatter plot, podrías determinar si las casas tienen características comparables. Si ambas casas muestran un rango y una escala similares para dos características específicas, esto podría sugerir que los estudiantes de ambas casas tienen capacidades o comportamientos similares en esas áreas.
-    Explicación: Esto responde a la pregunta porque sugiere que, aunque los estudiantes pueden variar en sus puntuaciones individuales, el conjunto de datos refleja que en promedio, ambos grupos son parecidos en esas características.
-
-5. Superposición de Datos
-
-    Interpretación: Otra posibilidad es observar si los datos de las dos características se superponen de manera significativa entre las dos casas. Una fuerte superposición indicaría que los estudiantes de ambas casas tienen valores similares en esas características, sugiriendo que estos aspectos no diferencian a las casas entre sí.
-    Explicación: Una superposición significativa de los datos visualizados en el scatter plot indicaría que esas características no son distintivas de las casas, lo que implica que ambas casas son similares en esos aspectos.
-
-Consideraciones Adicionales:
-
-    Preprocesamiento de Datos: Asegúrate de normalizar o estandarizar los datos si las características tienen escalas muy diferentes. Esto ayudará a evitar sesgos en la interpretación.
-    Uso de Color y Etiquetas: Usa colores o símbolos diferentes para cada casa en el scatter plot, lo que facilitará la identificación de patrones y similitudes.
-    
 
 Ancient Runes : 6
 Ancient Runes - Potions
