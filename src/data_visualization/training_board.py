@@ -160,6 +160,14 @@ def prepare_data(chosen_data, data):
 
     for i, course in enumerate(courses):
         input_matrix[:, i + 1] = df_courses[course.name].values
+    df_courses['Index'] = data['Index'].tolist()
+    df_courses['Hogwarts House'] = data['Hogwarts House'].tolist()
+    if 'Last Name' in data.columns:
+        df_courses['Last Name'] = data['Last Name'].tolist()
+    else:
+        print("MISTAKE")
+    
+    
     output_gryffindor = np.zeros((num_rows, 1))
     output_slytherin = np.zeros((num_rows, 1))
     output_ravenclaw = np.zeros((num_rows, 1))
@@ -199,7 +207,7 @@ def prepare_data(chosen_data, data):
     # print("Output Ravenclaw:\n", output_ravenclaw)
     # print("Output Hufflepuff:\n", output_hufflepuff)
     # print("Theta:\n", theta)
-    return input_matrix, output_gryffindor, output_hufflepuff, output_ravenclaw, output_slytherin
+    return input_matrix, output_gryffindor, output_hufflepuff, output_ravenclaw, output_slytherin, df_courses
 
     # matrix = df_courses.to_numpy()
 def get_single_sample_from_dataset_test_2(index : int, list_classes : str):
@@ -256,9 +264,12 @@ def main():
         second_class : str = ''
         normalized_data_flag : bool = False
         list_features : list =  [x for x  in list_courses if x != 'Hogwarts House']
+        list_courses = [x for x  in list_courses if x != 'Hogwarts House']
         list_features.extend(['Combinaison', 'Finish'])
         # print(list_features)
         chosen_courses: list = []
+        #verifier qu'on prend pas plusieurs fois le meme cours, mettre une limite de cours, permettre d'enchainer les tests et enregistrer les plus performants
+
         while True:
             feature = curses.wrapper(lambda stdscr: prompt(stdscr, list_features, "Choose feature class:\n", False))
             if feature == 'EXIT':
@@ -284,31 +295,50 @@ def main():
             print("no courses were chosen")
         else:
             print("chosen course")
-            data_x, output_gryffindor, output_hufflepuff, output_ravenclaw, output_slytherin = prepare_data(chosen_courses, numeric_df)
+            data_x, output_gryffindor, output_hufflepuff, output_ravenclaw, output_slytherin, df_courses = prepare_data(chosen_courses, numeric_df)
 
-            w_1 = logistic_regression(data_x, output_gryffindor, 5)
-            w_2 = logistic_regression(data_x, output_hufflepuff, 5)
-            w_3 = logistic_regression(data_x, output_ravenclaw, 5)
-            w_4 = logistic_regression(data_x, output_slytherin, 5)
+            expected_results = []
+            predicted_results = []
+            w_1 = logistic_regression(data_x, output_gryffindor)
+            w_2 = logistic_regression(data_x, output_hufflepuff)
+            w_3 = logistic_regression(data_x, output_ravenclaw)
+            w_4 = logistic_regression(data_x, output_slytherin)
             # print("avant")
             for i in range(50):
-                data_test = get_single_sample_from_dataset_test_2(i, chosen_courses)
-
-                predictions_1 = predict(data_test, w_1)
+                data_test = get_single_sample_from_dataset_test_2(i, chosen_courses)#jai modifie 
+                expected_results.append(df_courses['Hogwarts House'][i])
+                predictions_1 = predict(data_test, w_1)#jai modifie predict
                 predictions_2 = predict(data_test, w_2)
                 predictions_3 = predict(data_test, w_3)
                 predictions_4 = predict(data_test, w_4)
 
-
+                predictions = [predictions_1, predictions_2, predictions_3, predictions_4]
+                max_prediction = max(predictions)
+                predictions = [1 if pred == max_prediction else 0 for pred in predictions]
+                predictions_1, predictions_2, predictions_3, predictions_4 = predictions
 
                 if predictions_1 == 1:
-                    print(f'Index {i} is gry')
+                    predicted_results.append(1)  # Gryffindor
+                elif predictions_2 == 1:
+                    predicted_results.append(2)  # Hufflepuff
+                elif predictions_3 == 1:
+                    predicted_results.append(3)  # Ravenclaw
+                elif predictions_4 == 1:
+                    predicted_results.append(4)  # Slytherin
+
+                print("What we expect",df_courses['Hogwarts House'][i])
+                if predictions_1 == 1:
+                    print(f'Index {i} is     1 : Gryffindor\n')
                 if predictions_2 == 1:
-                    print(f'Index {i} is huff')
+                    print(f'Index {i} is     2 : Hufflepuff\n')
                 if predictions_3 == 1:
-                    print(f'Index {i} is Ravenclaw')
+                    print(f'Index {i} is     3 : Ravenclaw\n')
                 if predictions_4 == 1:
-                    print(f'Index {i} is sly')
+                    print(f'Index {i} is     4 : Slytherin\n')
+            correct_predictions = sum([1 for expected, predicted in zip(expected_results, predicted_results) if expected == predicted])
+            total_predictions = len(expected_results)
+            success_rate = (correct_predictions / total_predictions) * 100
+            print(f'Success rate: {success_rate:.2f}%')
                 # print(w_1, w_2, w_3, w_4)
 
     except ValueError as e:

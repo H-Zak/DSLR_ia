@@ -43,12 +43,20 @@ def compute_cost_ft(data_x : np.ndarray, data_y : np.ndarray, weigths : np.ndarr
     cost = - (1 / m) * np.sum(data_y * np.log(predictions) + (1 - data_y) * np.log(1 - predictions))
     return cost
 
-def logistic_regression(data_x: np.ndarray, data_y: np.ndarray, max_iterations : int, tolerance: float = 1e-6) -> None:
+def save_data_to_file(data_x: np.ndarray, data_y: np.ndarray, filename: str) -> None:
+    with open(filename, 'w') as file:
+        file.write("data_x:\n")
+        np.savetxt(file, data_x, delimiter=',')
+        file.write("\ndata_y:\n")
+        np.savetxt(file, data_y, delimiter=',')
+
+def logistic_regression(data_x: np.ndarray, data_y: np.ndarray, tolerance: float = 1e-6) -> None:
     # Init weigths
     w = np.zeros(data_x.shape[1])
-
+    
+    save_data_to_file(data_x, data_y, 'data_output.txt')
     # Learning rate
-    learning_rate = 0.00001
+    learning_rate = 0.0001
     # For plot function
     costs = []
     iterations = []
@@ -72,7 +80,7 @@ def logistic_regression(data_x: np.ndarray, data_y: np.ndarray, max_iterations :
         # Computing costs for plot
         if i % 100 == 0:
             cost = compute_cost_ft(data_x, data_y, new_w)
-            print(f"Cost : {cost:.4f}")
+            # print(f"Cost : {cost:.4f}")
             costs.append(cost)
             iterations.append(i)
 
@@ -91,11 +99,11 @@ def predict(data_x: np.ndarray, w: np.ndarray) -> np.ndarray:
     z = np.dot(data_x, w)
 
     probabilities = sigmoid_function(z)
-    print(probabilities)
+    # print(probabilities)
 
-    predictions = (probabilities >= 0.5).astype(int)
+    # predictions = (probabilities >= 0.5).astype(int)
 
-    return predictions
+    return probabilities
 
 
 def map_hogwarts_house_to_class(hogwarts_house : str):
