@@ -14,9 +14,11 @@ def derivative_of_w(predictions : np.ndarray, data_x : np.ndarray, data_y : np.n
     # Training examples
     m: int = data_x.shape[0]
 
-    data_x_transpose = data_x.transpose()
-    data_y = data_y.flatten()#car predicition est de forme applatit
 
+    data_x_transpose = data_x.transpose()
+    # print("Here", data_y.shape)
+    data_y = data_y.flatten()#car predicition est de forme applatit
+    # print("MOdif",data_y.shape, data_y)
 
     deviation = np.matmul(data_x_transpose, (predictions - data_y))
     deviation = deviation * (1/ m)
@@ -30,7 +32,11 @@ def sigmoid_function(z : np.ndarray) -> np.ndarray:
 
 def compute_cost_ft(data_x : np.ndarray, data_y : np.ndarray, weigths : np.ndarray):
     # Training examples
+    # print(data_y.shape)
+    data_y = data_y.flatten()
+    # print(data_y.shape)
     m = len(data_y)
+
     # Predictions
     predictions = sigmoid_function(np.dot(data_x, weigths))
     # Cost functions
@@ -42,7 +48,7 @@ def logistic_regression(data_x: np.ndarray, data_y: np.ndarray, max_iterations :
     w = np.zeros(data_x.shape[1])
 
     # Learning rate
-    learning_rate = 0.0001
+    learning_rate = 0.00001
     # For plot function
     costs = []
     iterations = []
@@ -78,13 +84,14 @@ def logistic_regression(data_x: np.ndarray, data_y: np.ndarray, max_iterations :
         i += 1
 
     print(w)
-    plot_cost_function_scatter(iterations, costs)
+    # plot_cost_function_scatter(iterations, costs)
     return w
 
 def predict(data_x: np.ndarray, w: np.ndarray) -> np.ndarray:
     z = np.dot(data_x, w)
 
     probabilities = sigmoid_function(z)
+    print(probabilities)
 
     predictions = (probabilities >= 0.5).astype(int)
 
@@ -112,61 +119,61 @@ def get_x_matrix(numeric_df, list_classes):
     matrix = np.hstack((ones_column, tmp_matrix))
     return matrix
 
-def get_single_sample_from_dataset_test(index : int, list_classes : str):
-    df = pd.read_csv('../datasets/dataset_train_3.csv')
+# def get_single_sample_from_dataset_test(index : int, list_classes : str):
+#     df = pd.read_csv('../datasets/dataset_train_3.csv')
 
-    if index not in df.index:
-        raise ValueError(f"Not index found in DataFrame.")
+#     if index not in df.index:
+#         raise ValueError(f"Not index found in DataFrame.")
 
-    example = df.loc[index]
+#     example = df.loc[index]
 
-    print(example['Last Name'])
+#     print(example['Last Name'])
 
-    means = df[list_classes].mean()
-    stds = df[list_classes].std()
+#     means = df[list_classes].mean()
+#     stds = df[list_classes].std()
 
-    examples_notes = [1.0]
+#     examples_notes = [1.0]
 
-    for subject in list_classes:
-        if subject in example.index:
-            normalized_note = (example[subject] - means[subject]) / stds[subject]
-            examples_notes.append(normalized_note)
+#     for subject in list_classes:
+#         if subject in example.index:
+#             normalized_note = (example[subject] - means[subject]) / stds[subject]
+#             examples_notes.append(normalized_note)
 
-    return np.array(examples_notes)
+#     return np.array(examples_notes)
 
-def main():
-    try:
-        # describe_data('../datasets/dataset_train_2.csv')#exo 1
-        print("Logistic regression")
-        # Reading data
-        df = pd.read_csv('../datasets/dataset_train.csv')
-        # Getting all the columns with numeric values
-        numeric_df = select_numeric_columns(df)
-        # Getting names of the numeric columns
-        list_classes = ['Charms', 'Potions', 'Flying']
-        # Getting matrix of classes notes
-        test_data_x = get_x_matrix(numeric_df, list_classes)
-        print(test_data_x)
-        # Getting y
-        test_data_y = df['Hogwarts House'].apply(map_hogwarts_house_to_class).to_numpy()
+# def main():
+#     try:
+#         # describe_data('../datasets/dataset_train_2.csv')#exo 1
+#         print("Logistic regression")
+#         # Reading data
+#         df = pd.read_csv('../datasets/dataset_train.csv')
+#         # Getting all the columns with numeric values
+#         numeric_df = select_numeric_columns(df)
+#         # Getting names of the numeric columns
+#         list_classes = ['Charms', 'Potions', 'Flying']
+#         # Getting matrix of classes notes
+#         test_data_x = get_x_matrix(numeric_df, list_classes)
+#         print(test_data_x)
+#         # Getting y
+#         test_data_y = df['Hogwarts House'].apply(map_hogwarts_house_to_class).to_numpy()
 
-        w = logistic_regression(test_data_x, test_data_y, 5)
+#         w = logistic_regression(test_data_x, test_data_y, 5)
 
-        # Lab
-        for i in range(50):
-            data_test = get_single_sample_from_dataset_test(i, list_classes)
+#         # Lab
+#         for i in range(50):
+#             data_test = get_single_sample_from_dataset_test(i, list_classes)
 
-            predictions = predict(data_test, w)
+#             predictions = predict(data_test, w)
 
-            if predictions == 1:
-                print(f'Index {i} is Ravenclaw')
+#             if predictions == 1:
+#                 print(f'Index {i} is Ravenclaw')
 
-    except ValueError as e:
-        print(e)
-    except CourseNotFound as e:
-        print(e)
-    except FileNotFoundError:
-        print('Failed to read the dataset')
+#     except ValueError as e:
+#         print(e)
+#     except CourseNotFound as e:
+#         print(e)
+#     except FileNotFoundError:
+#         print('Failed to read the dataset')
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()

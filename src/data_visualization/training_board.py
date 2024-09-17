@@ -8,6 +8,7 @@ import pprint
 import pandas as pd
 import time
 import curses
+import sys
 
 # Import exceptions
 from exceptions.CourseNotFound import CourseNotFound
@@ -21,7 +22,7 @@ from modules.utils import create_houses_list_of_course, get_name_for_plot, selec
 # Import course
 from classes.Course import Course
 
-from logistic_regression.main import logistic_regression, predict, get_single_sample_from_dataset_test
+from logistic_regression.main import logistic_regression, predict
 
 def select_numeric_columns(df : pd.DataFrame) -> pd.DataFrame:
     return df.select_dtypes(include=np.number)
@@ -164,7 +165,7 @@ def prepare_data(chosen_data, data):
     output_ravenclaw = np.zeros((num_rows, 1))
     output_hufflepuff = np.zeros((num_rows, 1))
     print("longeur des resultat",len(result.data_zscore))
-    for i, house in enumerate(result.data_zscore):
+    for i, house in enumerate(result.raw_data):
         if house == 1:  # Gryffindor
             output_gryffindor[i] = 1
         elif house == 2:  # Slytherin
@@ -175,7 +176,24 @@ def prepare_data(chosen_data, data):
             output_hufflepuff[i] = 1
 
     theta = np.zeros((num_cols, 1))
-    print("input data:\n", input_matrix)
+    with open('output.txt', 'w') as f:
+        # Sauvegarder la sortie standard d'origine
+        original_stdout = sys.stdout
+        try:
+            # Rediriger la sortie standard vers le fichier
+            sys.stdout = f
+
+            # Vos impressions
+            print("input data:\n", input_matrix)
+            print("Output Gryffindor:\n", output_gryffindor)
+            print("Output Slytherin:\n", output_slytherin)
+            print("Output Ravenclaw:\n", output_ravenclaw)
+            print("Output Hufflepuff:\n", output_hufflepuff)
+        finally:
+            # Restaurer la sortie standard d'origine
+            sys.stdout = original_stdout
+            f.close()
+    # print("input data:\n", input_matrix)
     # print("Output Gryffindor:\n", output_gryffindor)
     # print("Output Slytherin:\n", output_slytherin)
     # print("Output Ravenclaw:\n", output_ravenclaw)
@@ -184,11 +202,33 @@ def prepare_data(chosen_data, data):
     return input_matrix, output_gryffindor, output_hufflepuff, output_ravenclaw, output_slytherin
 
     # matrix = df_courses.to_numpy()
+def get_single_sample_from_dataset_test_2(index : int, list_classes : str):
+    # print("HERE")
+    df2 = pd.read_csv('../datasets/dataset_train_3copy.csv')
 
+    if index not in df2.index:
+        raise ValueError(f"Not index found in DataFrame.")
+
+    example = df2.loc[index]
+
+    print(example['Last Name'])
+
+    means = df2[list_classes].mean()
+    stds = df2[list_classes].std()
+
+    examples_notes = [1.0]
+
+    for subject in list_classes:
+        if subject in example.index:
+            normalized_note = (example[subject] - means[subject]) / stds[subject]
+            examples_notes.append(normalized_note)
+
+    return np.array(examples_notes)
 def main():
     try:
         # Reading data
-        df = pd.read_csv('../datasets/dataset_train.csv')
+        # with open('../datasets/dataset_train_3.csv') as file :
+        df = pd.read_csv('../datasets/dataset_train_3.csv')
 
         # Get name of Hogwarts classes
         unique_houses = df['Hogwarts House'].unique()
@@ -250,13 +290,16 @@ def main():
             w_2 = logistic_regression(data_x, output_hufflepuff, 5)
             w_3 = logistic_regression(data_x, output_ravenclaw, 5)
             w_4 = logistic_regression(data_x, output_slytherin, 5)
+            # print("avant")
             for i in range(50):
-                data_test = get_single_sample_from_dataset_test(i, chosen_courses)
+                data_test = get_single_sample_from_dataset_test_2(i, chosen_courses)
 
                 predictions_1 = predict(data_test, w_1)
                 predictions_2 = predict(data_test, w_2)
                 predictions_3 = predict(data_test, w_3)
                 predictions_4 = predict(data_test, w_4)
+
+
 
                 if predictions_1 == 1:
                     print(f'Index {i} is gry')
