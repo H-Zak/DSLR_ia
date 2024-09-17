@@ -27,15 +27,7 @@ def compute_cost_ft(data_x : np.ndarray, data_y : np.ndarray, weigths : np.ndarr
     cost = - (1 / m) * np.sum(data_y * np.log(predictions) + (1 - data_y) * np.log(1 - predictions))
     return cost
 
-def save_data_to_file(data_x: np.ndarray, data_y: np.ndarray, filename: str) -> None:
-    with open(filename, 'w') as file:
-        file.write("data_x:\n")
-        np.savetxt(file, data_x, delimiter=',')
-        file.write("\ndata_y:\n")
-        np.savetxt(file, data_y, delimiter=',')
-
 def logistic_regression(data_x: np.ndarray, data_y: np.ndarray, house : str, tolerance: float = 1e-6) -> np.ndarray:
-    save_data_to_file(data_x, data_y, './data.txt')
     # Init weigths
     w = np.zeros(data_x.shape[1])
     # Learning rate
