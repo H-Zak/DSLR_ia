@@ -5,7 +5,7 @@ class ClassBinarizer:
         self.classes = classes
     
     def binarize(self, y, target_class):
-        list_labeled = [1 if label == target_class else 0 for label in y]
+        list_labeled = [1.0 if label == target_class else 0.0 for label in y]
         return np.array(list_labeled)
     
     def binarize_all(self, y):
