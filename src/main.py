@@ -28,7 +28,10 @@ def prepare_data_X(course_chosen, data):
             for part in parts:
                 course_data = data[part].tolist()
                 combined_data.append(course_data)
+            # print(combined_data)
+            
             combined_mean_data = np.mean(combined_data, axis=0).tolist()
+            # combined_data
             courses.append(Course(course, combined_mean_data, True))
         else:
             course_data = data[course].tolist()
@@ -61,16 +64,16 @@ def select_features(list_courses : list):
     list_features.extend(['Combinaison', 'Finish'])
     
     while True:
-        feature = curses.wrapper(lambda stdscr: prompt(stdscr, list_features, "Choose feature class:\n", False))
+        feature = curses.wrapper(lambda stdscr: prompt(stdscr, list_features,chosen_courses, "Choose feature class:\n", False))
         if feature == 'EXIT':
             return
         elif feature == 'Finish':
             break
         elif feature == 'Combinaison':
-            first_class = curses.wrapper(lambda stdscr: prompt(stdscr, list_courses, "Choose first class for combination:\n", False))
+            first_class = curses.wrapper(lambda stdscr: prompt(stdscr, list_courses, chosen_courses,"Choose first class for combination:\n", False))
             if first_class == 'EXIT':
                 break
-            second_class = curses.wrapper(lambda stdscr: prompt(stdscr, list_courses, "Choose second class for combination:\n", False))
+            second_class = curses.wrapper(lambda stdscr: prompt(stdscr, list_courses, chosen_courses,"Choose second class for combination:\n", False))
             if second_class == 'EXIT':
                 break
             if first_class != second_class:
@@ -81,8 +84,11 @@ def select_features(list_courses : list):
                 continue
         else:
             chosen_courses.append(feature)
-
-    return chosen_courses
+    if not chosen_courses:
+        print("no courses were chosen")
+        return 
+    else:
+        return chosen_courses
 
 
 def main():
@@ -97,6 +103,8 @@ def main():
         list_courses = [column for column in numeric_df.columns if column != "Index" and column != "Hogwarts House"]
 
         features =  select_features(list_courses)
+        if not features:
+            return 
 
         data_X = prepare_data_X(features, numeric_df)
 

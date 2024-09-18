@@ -1,6 +1,6 @@
 import curses
 
-def prompt(stdscr, collection_list, prompt_message, back):
+def prompt(stdscr, collection_list, chosen_list, prompt_message, back):
     # Clear and refresh the screen
     curses.curs_set(0)
     stdscr.clear()
@@ -23,6 +23,8 @@ def prompt(stdscr, collection_list, prompt_message, back):
         
         # Display the prompt message at the top of the screen
         stdscr.addstr(prompt_message)
+        # Display the chosen list separately
+        stdscr.addstr(f"\nChosen: {chosen_list}\n", curses.A_DIM)
         
         # Iterate over each item in the collection_lst
         for idx, item in enumerate(collection_lst):

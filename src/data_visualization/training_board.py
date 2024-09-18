@@ -218,16 +218,16 @@ def main():
         #verifier qu'on prend pas plusieurs fois le meme cours, mettre une limite de cours, permettre d'enchainer les tests et enregistrer les plus performants
 
         while True:
-            feature = curses.wrapper(lambda stdscr: prompt(stdscr, list_features, "Choose feature class:\n", False))
+            feature = curses.wrapper(lambda stdscr: prompt(stdscr, list_features, chosen_courses, "Choose feature class:\n", False))
             if feature == 'EXIT':
                 return
             elif feature == 'Finish':
                 break
             elif feature == 'Combinaison':
-                first_class = curses.wrapper(lambda stdscr: prompt(stdscr, list_courses, "Choose first class for combination:\n", False))
+                first_class = curses.wrapper(lambda stdscr: prompt(stdscr, list_courses, chosen_courses, "Choose first class for combination:\n", False))
                 if first_class == 'EXIT':
                     break
-                second_class = curses.wrapper(lambda stdscr: prompt(stdscr, list_courses, "Choose second class for combination:\n", False))
+                second_class = curses.wrapper(lambda stdscr: prompt(stdscr, list_courses, chosen_courses, "Choose second class for combination:\n", False))
                 if second_class == 'EXIT':
                     break
                 if first_class != second_class:
