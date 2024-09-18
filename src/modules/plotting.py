@@ -73,4 +73,3 @@ def plot_cost_function_scatter(iterations: list, costs: list, plot_path: str = '
     
     # Save the plot
     plt.savefig(plot_path)
-    print(f'The plot has been saved in {plot_path}!')
