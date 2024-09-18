@@ -161,78 +161,17 @@ def prepare_data(chosen_data, data):
 
     for i, course in enumerate(courses):
         input_matrix[:, i + 1] = df_courses[course.name].values
-    df_courses['Index'] = data['Index'].tolist()
-    df_courses['Hogwarts House'] = data['Hogwarts House'].tolist()
-    if 'Last Name' in data.columns:
-        df_courses['Last Name'] = data['Last Name'].tolist()
-    else:
-        print("MISTAKE")
     
-    
-    output_gryffindor = np.zeros((num_rows, 1))
-    output_slytherin = np.zeros((num_rows, 1))
-    output_ravenclaw = np.zeros((num_rows, 1))
-    output_hufflepuff = np.zeros((num_rows, 1))
-    print("longeur des resultat",len(result.data_zscore))
-    for i, house in enumerate(result.raw_data):
-        if house == 1:  # Gryffindor
-            output_gryffindor[i] = 1
-        elif house == 2:  # Slytherin
-            output_slytherin[i] = 1
-        elif house == 3:  # Ravenclaw
-            output_ravenclaw[i] = 1
-        elif house == 4:  # Hufflepuff
-            output_hufflepuff[i] = 1
-
-    theta = np.zeros((num_cols, 1))
-    with open('output.txt', 'w') as f:
-        # Sauvegarder la sortie standard d'origine
-        original_stdout = sys.stdout
-        try:
-            # Rediriger la sortie standard vers le fichier
-            sys.stdout = f
-
-            # Vos impressions
-            print("input data:\n", input_matrix)
-            print("Output Gryffindor:\n", output_gryffindor)
-            print("Output Slytherin:\n", output_slytherin)
-            print("Output Ravenclaw:\n", output_ravenclaw)
-            print("Output Hufflepuff:\n", output_hufflepuff)
-        finally:
-            # Restaurer la sortie standard d'origine
-            sys.stdout = original_stdout
-            f.close()
-    # print("input data:\n", input_matrix)
-    # print("Output Gryffindor:\n", output_gryffindor)
-    # print("Output Slytherin:\n", output_slytherin)
-    # print("Output Ravenclaw:\n", output_ravenclaw)
-    # print("Output Hufflepuff:\n", output_hufflepuff)
-    # print("Theta:\n", theta)
-    return input_matrix, output_gryffindor, output_hufflepuff, output_ravenclaw, output_slytherin, df_courses
+    return input_matrix, df_courses
 
     # matrix = df_courses.to_numpy()
-def get_single_sample_from_dataset_test_2(index : int, list_classes : str):
-    # print("HERE")
-    df2 = pd.read_csv('../datasets/dataset_train_3copy.csv')
+def display_current_selection(stdscr, chosen_courses):
+    stdscr.clear()
+    stdscr.addstr(0, 0, "Current selection:\n")
+    for i, course in enumerate(chosen_courses, start=1):
+        stdscr.addstr(i, 0, f"{i}. {course}")
+    stdscr.refresh()
 
-    if index not in df2.index:
-        raise ValueError(f"Not index found in DataFrame.")
-
-    example = df2.loc[index]
-
-    print(example['Last Name'])
-
-    means = df2[list_classes].mean()
-    stds = df2[list_classes].std()
-
-    examples_notes = [1.0]
-
-    for subject in list_classes:
-        if subject in example.index:
-            normalized_note = (example[subject] - means[subject]) / stds[subject]
-            examples_notes.append(normalized_note)
-
-    return np.array(examples_notes)
 def main():
     try:
         # Reading data
@@ -294,21 +233,47 @@ def main():
                     continue
             else:
                 chosen_courses.append(feature)
+            # curses.wrapper(lambda stdscr: display_current_selection(stdscr, chosen_courses))
         if not chosen_courses:
             print("no courses were chosen")
         else:
             print("chosen course")
-            data_x, output_gryffindor, output_hufflepuff, output_ravenclaw, output_slytherin, df_courses = prepare_data(chosen_courses, numeric_df)
+            data_x, df_courses = prepare_data(chosen_courses, numeric_df)
             predictions_list = []
             df2 = pd.read_csv('../datasets/dataset_train_3.csv')
-
+            print("HERE 464 \n")
             for i, house in enumerate(unique_houses):
+                print(house)
                 data_y_by_house = binarizer.binarize(df2['Hogwarts House'], house)
                 w = logistic_regression(data_x, data_y_by_house)
                 print(w)
                 predictions = predict(data_x, w)
                 predictions_list.append(predictions)
+            print(predictions_list)
+            print("HERE 2")
 
+            expected_results = df2['Hogwarts House'].tolist()
+            predicted_results = []
+
+            for i in range(len(predictions_list[0])):
+                predictions = [predictions_list[j][i] for j in range(len(predictions_list))]
+                max_prediction = max(predictions)
+                predictions = [1 if pred == max_prediction else 0 for pred in predictions]
+                
+                if predictions[0] == 1:
+                    predicted_results.append('Ravenclaw')
+                elif predictions[1] == 1:
+                    predicted_results.append('Slytherin')
+                elif predictions[2] == 1:
+                    predicted_results.append('Gryffindor')
+                elif predictions[3] == 1:
+                    predicted_results.append('Hufflepuff')
+            correct_predictions = sum([1 for expected, predicted in zip(expected_results, predicted_results) if expected == predicted])
+            total_predictions = len(expected_results)
+            success_rate = (correct_predictions / total_predictions) * 100
+
+            print(f'Success rate: {success_rate:.2f}%')
+                    
             # expected_results = []
             # predicted_results = []
             # w_1 = logistic_regression(data_x, output_gryffindor)

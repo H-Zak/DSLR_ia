@@ -99,11 +99,12 @@ def predict(data_x: np.ndarray, w: np.ndarray) -> np.ndarray:
     z = np.dot(data_x, w)
 
     probabilities = sigmoid_function(z)
+    rounded_probabilities = np.round(probabilities,4)
     # print(probabilities)
 
     # predictions = (probabilities >= 0.5).astype(int)
 
-    return probabilities
+    return rounded_probabilities
 
 
 def map_hogwarts_house_to_class(hogwarts_house : str):
