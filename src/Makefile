@@ -1,4 +1,7 @@
 all:
+	@python -m main
+
+lr:
 	@python -m logistic_regression.main
 
 describe:

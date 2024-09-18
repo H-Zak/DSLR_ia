@@ -8,8 +8,10 @@ import pprint
 import pandas as pd
 import time
 import curses
+
 import sys
 from classes.ClassBinarizer import ClassBinarizer
+
 
 # Import exceptions
 from exceptions.CourseNotFound import CourseNotFound
@@ -23,7 +25,9 @@ from modules.utils import create_houses_list_of_course, get_name_for_plot, selec
 # Import course
 from classes.Course import Course
 
+
 from logistic_regression.main import logistic_regression, predict
+
 
 def select_numeric_columns(df : pd.DataFrame) -> pd.DataFrame:
     return df.select_dtypes(include=np.number)
@@ -182,6 +186,7 @@ def main():
         # Get name of Hogwarts classes
         unique_houses = df['Hogwarts House'].unique()
         binarizer = ClassBinarizer(unique_houses)
+
             # Dictionnaire de correspondance
         house_mapping = {
             'Gryffindor': 1,
@@ -233,7 +238,6 @@ def main():
                     continue
             else:
                 chosen_courses.append(feature)
-            # curses.wrapper(lambda stdscr: display_current_selection(stdscr, chosen_courses))
         if not chosen_courses:
             print("no courses were chosen")
         else:
@@ -316,7 +320,6 @@ def main():
             # total_predictions = len(expected_results)
             # success_rate = (correct_predictions / total_predictions) * 100
             # print(f'Success rate: {success_rate:.2f}%')
-                # print(w_1, w_2, w_3, w_4)
 
     except ValueError as e:
         print(e)

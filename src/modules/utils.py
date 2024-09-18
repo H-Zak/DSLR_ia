@@ -9,7 +9,7 @@ from classes.Course import Course
 def select_numeric_columns(df : pd.DataFrame) -> pd.DataFrame:
     return df.select_dtypes(include=np.number)
 
-def get_tab_courses(df : pd.DataFrame, list_str_courses) -> List[Course]:
+def get_tab_courses(df : pd.DataFrame, list_str_courses : list) -> List[Course]:
     courses : List[Course] = []
     # Sorting data
     for course in list_str_courses:

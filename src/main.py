@@ -6,10 +6,11 @@ import time
 # Import logistic regression and prediction
 from logistic_regression.main import logistic_regression, predict
 # Import evaluating function
-from evaluation.evaluate import evaluate
+
+from evaluation.evaluate import evaluate, save_feature_list
 # Import classes
 from classes.ClassBinarizer import ClassBinarizer
-from classes.Prediction import Prediction
+
 from classes.Course import Course
 # Import exceptions
 from exceptions.CourseNotFound import CourseNotFound
@@ -86,7 +87,7 @@ def select_features(list_courses : list):
 def main():
     try:
         # Reading data
-        df = pd.read_csv('../datasets/dataset_train_3.csv')
+        df = pd.read_csv('../datasets/dataset_train.csv')
         # Get name of Hogwarts classes
         unique_houses = df['Hogwarts House'].unique()
         # Getting all the columns with numeric values
@@ -106,7 +107,7 @@ def main():
 
         predictions_list = []
 
-        for i, house in enumerate(unique_houses):
+        for house in unique_houses:
             data_y_by_house = binarizer.binarize(raw_data_y, house)
             w = logistic_regression(data_X, data_y_by_house, house)
             print(w)
@@ -118,7 +119,7 @@ def main():
         # print(predictions_matrix)
         predictions_house_indices = np.argmax(predictions_matrix, axis=1)
         # print(predictions_house_indices)
-        evaluate(df, predictions_house_indices)
+        save_feature_list(evaluate(df, predictions_house_indices), features)
         
     except ValueError as e:
         (e)

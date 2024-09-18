@@ -56,12 +56,10 @@ def pair_plot(house_classes_data : dict, list_classes : list):
 
     plt.tight_layout()
     plt.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.05, hspace=0.2, wspace=0.2)
-    fig.savefig('pair_plot_large.png', dpi=300, bbox_inches='tight')
+    fig.savefig('./plots/pair_plot_large.png', dpi=300, bbox_inches='tight')
 
 def main():
     try:
-        # describe_data('../datasets/dataset_train_2.csv')#exo 1
-        print("Pair plot")
         # Reading data
         df = pd.read_csv('../datasets/dataset_train.csv')
 
