@@ -10,7 +10,7 @@ from logistic_regression.main import logistic_regression, predict
 from evaluation.evaluate import evaluate, save_feature_list
 # Import classes
 from classes.ClassBinarizer import ClassBinarizer
-
+from classes.Logger import Logger
 from classes.Course import Course
 # Import exceptions
 from exceptions.CourseNotFound import CourseNotFound
@@ -88,7 +88,7 @@ def select_features(list_courses : list):
 def main():
     try:
         # Reading data
-        df = pd.read_csv('../datasets/dataset_train.csv')
+        df = pd.read_csv('../datasets/dataset_train_3.csv')
         # Get name of Hogwarts classes
         unique_houses = df['Hogwarts House'].unique()
         # Getting all the columns with numeric values
@@ -98,36 +98,44 @@ def main():
 
         features =  select_features(list_courses)
 
+        print(features)
+
+        logger = Logger("evaluation_logs.json", unique_houses)
+
+        logger.set_features(features)
+
+
         data_X = prepare_data_X(features, numeric_df)
 
         raw_data_y = df['Hogwarts House'].to_numpy()
-
 
         # Initialize class binarizer
         binarizer = ClassBinarizer(unique_houses)
 
         predictions_list = []
         for house in unique_houses:
+            print(house)
             data_y_by_house = binarizer.binarize(raw_data_y, house)
-            print(data_y_by_house)
-            w = logistic_regression(data_X, data_y_by_house, house)
+            w, iterations = logistic_regression(data_X, data_y_by_house, house)
             print(w)
+            logger.set_weigths_for_house(house, w)
+            logger.set_iterations_for_house(house, iterations)
             predictions = predict(data_X, w)
             predictions_list.append(predictions)
 
 
         predictions_matrix = np.column_stack(predictions_list)
-        # print(predictions_matrix)
         predictions_house_indices = np.argmax(predictions_matrix, axis=1)
-        # print(predictions_house_indices)
-        save_feature_list(evaluate(df, predictions_house_indices), features)
+        logger.set_score(evaluate(df, predictions_house_indices))
+
+        logger.create_log()
         
     except ValueError as e:
-        (e)
+        print(e)
     except CourseNotFound as e:
-        (e)
+        print(e)
     except FileNotFoundError:
-        ('Failed to read the dataset')
+        print('Failed to read the dataset')
 
 if __name__ == "__main__":
     main()

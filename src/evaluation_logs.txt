@@ -10,3 +10,5 @@ Score 0.98125 |  ['Herbology', 'Potions', 'Charms', 'Flying', 'Defense Against t
 Score 0.331875 |  ['Arithmancy']
 Score 0.331875 |  ['Arithmancy']
 Score 0.345625 |  ['Astronomy/Arithmancy']
+Score 0.596875 |  ['Arithmancy', 'Astronomy']
+Score 0.596875 |  ['Arithmancy', 'Astronomy']

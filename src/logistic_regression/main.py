@@ -31,7 +31,7 @@ def compute_cost_ft(data_x : np.ndarray, data_y : np.ndarray, weigths : np.ndarr
     cost = - (1 / m) * np.sum(data_y * np.log(predictions) + (1 - data_y) * np.log(1 - predictions))
     return cost
 
-def logistic_regression(data_x: np.ndarray, data_y: np.ndarray, house : str, tolerance: float = 1e-6) -> np.ndarray:
+def logistic_regression(data_x: np.ndarray, data_y: np.ndarray, house : str, tolerance: float = 1e-6):
     # Init weigths
     w = np.zeros(data_x.shape[1])
     
@@ -57,7 +57,6 @@ def logistic_regression(data_x: np.ndarray, data_y: np.ndarray, house : str, tol
         # Computing costs for plot
         if i % 1000 == 0:
             cost = compute_cost_ft(data_x, data_y, new_w)
-            print(f"Cost : {cost:.4f}")
             costs.append(cost)
             iterations.append(i)
 
@@ -69,7 +68,7 @@ def logistic_regression(data_x: np.ndarray, data_y: np.ndarray, house : str, tol
         i += 1
 
     plot_cost_function_scatter(iterations, costs, f'./plots/cost_function_scatter_{house}.png')
-    return w
+    return w, i
 
 def predict(data_x: np.ndarray, w: np.ndarray) -> np.ndarray:
 
