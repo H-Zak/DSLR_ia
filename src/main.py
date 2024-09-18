@@ -105,9 +105,10 @@ def main():
 
         predictions_list = []
 
-        for i, house in enumerate(unique_houses):
+        for house in unique_houses:
             data_y_by_house = binarizer.binarize(raw_data_y, house)
             w = logistic_regression(data_X, data_y_by_house, house)
+            print(w)
             predictions = predict(data_X, w)
             predictions_list.append(predictions)
 

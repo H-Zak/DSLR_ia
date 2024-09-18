@@ -85,14 +85,14 @@ def main():
         first_class : str = ''
         second_class : str = ''
         normalized_data_flag : bool = False
-        list_features : list =  ['all_scatter_plots_grades', 'grades', 'mean', 'std', 'min', '25%', '50%', '75%', 'max']
+        list_features : list =  ['All grades scatter plots', 'grades', 'mean', 'std', 'min', '25%', '50%', '75%', 'max']
         
         while True:
             feature = curses.wrapper(lambda stdscr: prompt(stdscr, list_features, "Choose feature class:\n", False))
             if feature == 'EXIT':
                 return
             
-            if feature == 'all_scatter_plots_grades':
+            if feature == 'All grades scatter plots':
                 generate_all_the_scatter_plots_of_grades(house_classes_data, list_courses)
                 exit()
 
