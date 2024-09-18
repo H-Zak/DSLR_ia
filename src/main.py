@@ -57,6 +57,7 @@ def select_features(list_courses : list):
     second_class : str = ''
 
     list_features = list_courses
+    list_courses = [x for x  in list_courses if x != 'Hogwarts House']
     list_features.extend(['Combinaison', 'Finish'])
     
     while True:
@@ -106,9 +107,9 @@ def main():
         binarizer = ClassBinarizer(unique_houses)
 
         predictions_list = []
-
         for house in unique_houses:
             data_y_by_house = binarizer.binarize(raw_data_y, house)
+            print(data_y_by_house)
             w = logistic_regression(data_X, data_y_by_house, house)
             print(w)
             predictions = predict(data_X, w)

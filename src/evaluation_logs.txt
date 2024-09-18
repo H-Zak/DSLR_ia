@@ -7,3 +7,6 @@ Score 0.276875 |  ['Flying', 'Charms', 'Potions', 'Herbology', 'Defense Against 
 Score 0.98125 |  ['Herbology', 'Defense Against the Dark Arts', 'Potions', 'Charms', 'Flying']
 Score 0.98125 |  ['Herbology', 'Defense Against the Dark Arts', 'Potions', 'Charms', 'Flying']
 Score 0.98125 |  ['Herbology', 'Potions', 'Charms', 'Flying', 'Defense Against the Dark Arts']
+Score 0.331875 |  ['Arithmancy']
+Score 0.331875 |  ['Arithmancy']
+Score 0.345625 |  ['Astronomy/Arithmancy']

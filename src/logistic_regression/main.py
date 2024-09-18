@@ -57,7 +57,7 @@ def logistic_regression(data_x: np.ndarray, data_y: np.ndarray, house : str, tol
         # Computing costs for plot
         if i % 1000 == 0:
             cost = compute_cost_ft(data_x, data_y, new_w)
-            # print(f"Cost : {cost:.4f}")
+            print(f"Cost : {cost:.4f}")
             costs.append(cost)
             iterations.append(i)
 
