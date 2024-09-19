@@ -67,7 +67,7 @@ def logistic_regression(data_x: np.ndarray, data_y: np.ndarray, house : str, tol
         i += 1
 
     # plot_cost_function_scatter(iterations, costs, f'./plots/cost_function_scatter_{house}.png')
-    return w
+    return w, i
 
 def predict(data_x: np.ndarray, w: np.ndarray) -> np.ndarray:
 
