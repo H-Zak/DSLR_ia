@@ -53,6 +53,15 @@ def prepare_data_X(course_chosen, data):
 
     return input_matrix
 
+
+def show_temp_message(stdscr, message, duration=1):
+    stdscr.clear()
+    stdscr.addstr(0, 0, message)
+    stdscr.refresh()
+    time.sleep(duration)
+    stdscr.clear()
+    stdscr.refresh()
+
 def select_features(list_courses : list):
     chosen_courses: list = []
     feature : str = ''
@@ -77,13 +86,27 @@ def select_features(list_courses : list):
             if second_class == 'EXIT':
                 break
             if first_class != second_class:
-                chosen_courses.append(f"{first_class}/{second_class}")
+                combinaison = (f"{first_class}/{second_class}")
+                combinaison_bis = (f"{second_class}/{first_class}")
+                if combinaison not in chosen_courses and combinaison_bis not in chosen_courses:
+                    chosen_courses.append(combinaison)
+                else:
+                    curses.wrapper(lambda stdscr: show_temp_message(stdscr, "This combination has already been chosen"))
+                    # print("This combinaison has already been chosen")
+                    # time.sleep(2)
+                    continue
             else:
-                print("The classes chosen must be different")
-                time.sleep(2)
+                curses.wrapper(lambda stdscr: show_temp_message(stdscr, "The classes chosen must be different"))
+
+                # print("The classes chosen must be different")
+                # time.sleep(2)
                 continue
         else:
-            chosen_courses.append(feature)
+            if feature not in chosen_courses:
+                chosen_courses.append(feature)
+            else:
+                curses.wrapper(lambda stdscr: show_temp_message(stdscr, "This feature has already been chosen"))
+                print("This feature has already been chosen")
     if not chosen_courses:
         print("no courses were chosen")
         return
