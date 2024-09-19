@@ -61,7 +61,6 @@ def logistic_regression(data_x: np.ndarray, data_y: np.ndarray, house : str, tol
             iterations.append(i)
 
         if np.linalg.norm(new_w - w) < tolerance:
-            print(f"Converged after {i} iterations.")
             break
 
         w = new_w
