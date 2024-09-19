@@ -1,20 +1,20 @@
 all:
-	@python -m main
+	@python3 -m main
 
 lr:
-	@python -m logistic_regression.main
+	@python3 -m logistic_regression.main
 
 describe:
-	@python -m data_analysis.main
+	@python3 -m data_analysis.main
 
 histogram:
-	@python -m data_visualization.histogram
+	@python3 -m data_visualization.histogram
 
 scatter_plot:
-	@python -m data_visualization.scatter_plot
+	@python3 -m data_visualization.scatter_plot
 
 pair_plot:
-	@python -m data_visualization.pair_plot
+	@python3 -m data_visualization.pair_plot
 
 training:
 	@python3 -m data_visualization.training_board

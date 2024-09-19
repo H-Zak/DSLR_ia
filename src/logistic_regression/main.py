@@ -34,7 +34,7 @@ def compute_cost_ft(data_x : np.ndarray, data_y : np.ndarray, weigths : np.ndarr
 def logistic_regression(data_x: np.ndarray, data_y: np.ndarray, house : str, tolerance: float = 1e-6) -> np.ndarray:
     # Init weigths
     w = np.zeros(data_x.shape[1])
-    
+
     # save_data_to_file(data_x, data_y, 'data_output.txt')
     # Learning rate
     learning_rate = 0.0001
@@ -57,7 +57,7 @@ def logistic_regression(data_x: np.ndarray, data_y: np.ndarray, house : str, tol
         # Computing costs for plot
         if i % 1000 == 0:
             cost = compute_cost_ft(data_x, data_y, new_w)
-            print(f"Cost : {cost:.4f}")
+            # print(f"Cost : {cost:.4f}")
             costs.append(cost)
             iterations.append(i)
 
@@ -68,7 +68,7 @@ def logistic_regression(data_x: np.ndarray, data_y: np.ndarray, house : str, tol
         w = new_w
         i += 1
 
-    plot_cost_function_scatter(iterations, costs, f'./plots/cost_function_scatter_{house}.png')
+    # plot_cost_function_scatter(iterations, costs, f'./plots/cost_function_scatter_{house}.png')
     return w
 
 def predict(data_x: np.ndarray, w: np.ndarray) -> np.ndarray:
@@ -76,5 +76,5 @@ def predict(data_x: np.ndarray, w: np.ndarray) -> np.ndarray:
     z = np.dot(data_x, w)
 
     probabilities = sigmoid_function(z)
-    
+
     return probabilities

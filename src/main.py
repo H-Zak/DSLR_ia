@@ -29,14 +29,14 @@ def prepare_data_X(course_chosen, data):
                 course_data = data[part].tolist()
                 combined_data.append(course_data)
             # print(combined_data)
-            
+
             combined_mean_data = np.mean(combined_data, axis=0).tolist()
             # combined_data
             courses.append(Course(course, combined_mean_data, True))
         else:
             course_data = data[course].tolist()
             courses.append(Course(course, course_data, True))
-    
+
     # Creating DataFrame
     df_courses = pd.DataFrame()
     # Adding sorted data into DataFrame
@@ -62,7 +62,7 @@ def select_features(list_courses : list):
     list_features = list_courses
     list_courses = [x for x  in list_courses if x != 'Hogwarts House']
     list_features.extend(['Combinaison', 'Finish'])
-    
+
     while True:
         feature = curses.wrapper(lambda stdscr: prompt(stdscr, list_features,chosen_courses, "Choose feature class:\n", False))
         if feature == 'EXIT':
@@ -86,7 +86,7 @@ def select_features(list_courses : list):
             chosen_courses.append(feature)
     if not chosen_courses:
         print("no courses were chosen")
-        return 
+        return
     else:
         return chosen_courses
 
@@ -104,7 +104,7 @@ def main():
 
         features =  select_features(list_courses)
         if not features:
-            return 
+            return
 
         data_X = prepare_data_X(features, numeric_df)
 
@@ -117,7 +117,7 @@ def main():
         predictions_list = []
         for house in unique_houses:
             data_y_by_house = binarizer.binarize(raw_data_y, house)
-            print(data_y_by_house)
+            # print(data_y_by_house)	
             w = logistic_regression(data_X, data_y_by_house, house)
             print(w)
             predictions = predict(data_X, w)
@@ -129,7 +129,7 @@ def main():
         predictions_house_indices = np.argmax(predictions_matrix, axis=1)
         # print(predictions_house_indices)
         save_feature_list(evaluate(df, predictions_house_indices), features)
-        
+
     except ValueError as e:
         (e)
     except CourseNotFound as e:
