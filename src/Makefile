@@ -1,8 +1,8 @@
 all:
-	@python -m main
+	@python -m logreg_predict ../datasets/dataset_test.csv evaluation_logs.json
 
 lr:
-	@python -m logistic_regression.main
+	@python -m main
 
 describe:
 	@python -m data_analysis.main

@@ -125,6 +125,9 @@ def main():
         # Getting names of the numeric columns
         list_courses = [column for column in numeric_df.columns if column != "Index" and column != "Hogwarts House"]
 
+        print(unique_houses)
+
+
         features =  select_features(list_courses)
         if not features:
             return
