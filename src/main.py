@@ -117,7 +117,7 @@ def select_features(list_courses : list):
 def main():
     try:
         # Reading data
-        df = pd.read_csv('../datasets/dataset_train_3.csv')
+        df = pd.read_csv('../datasets/dataset_train.csv')
         # Get name of Hogwarts classes
         unique_houses = df['Hogwarts House'].unique()
         # Getting all the columns with numeric values
